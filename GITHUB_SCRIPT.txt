@@ -1,5 +1,5 @@
 @echo off
-title Madium Manager [Sky Land]
+title Madium Manager [Sky land]
 setlocal enabledelayedexpansion
 
 :: Verifica privilégios de administrador
@@ -17,52 +17,19 @@ cls
 echo ==================================================
 echo              MADIUM MANAGER - MENU
 echo ==================================================
-echo [1] Baixar e Extrair Madium
-echo [2] nova versao do madium mais tem key
-echo [3] Deletar arquivos do Madium (Limpeza)
-echo [4] Baixar e Instalar Dependencias
-echo [5] Baixar e Instalar Fishstrap
-echo [6] Sair
+echo [1] nova versao do madium mais tem key
+echo [2] Deletar arquivos do Madium (Limpeza)
+echo [3] Baixar e Instalar Dependencias
+echo [4] Baixar e Instalar Fishstrap
+echo [5] Sair
 echo ==================================================
 set /p opt="Escolha uma opcao: "
 
-if "%opt%"=="1" goto baixar_madium
-if "%opt%"=="2" goto nova_versao_key
-if "%opt%"=="3" goto deletar_madium
-if "%opt%"=="4" goto dependencias
-if "%opt%"=="5" goto baixar_fishstrap
-if "%opt%"=="6" exit
-goto menu
-
-:baixar_madium
-cls
-echo ==================================================
-echo           BAIXANDO E EXTRAINDO MADIUM
-echo ==================================================
-set "zip_url=https://files.manuscdn.com/user_upload_by_module/session_file/310519663151269258/SvXkjfJwkWxpSZME.zip"
-set "zip_path=%temp%\Madium-Bootstrapper.zip"
-set "extract_path=%USERPROFILE%\Downloads\Madium"
-
-echo Baixando Madium...
-curl -L -o "%zip_path%" "%zip_url%"
-
-if not exist "%zip_path%" echo [!] Erro no download. && pause && goto menu
-
-for %%I in ("%zip_path%" ) do set "fsize=%%~zI"
-if !fsize! LSS 102400 echo [!] Erro: Arquivo corrompido (!fsize! bytes). && del "%zip_path%" /f /q >nul 2>&1 && pause && goto menu
-
-echo Extraindo arquivos...
-if not exist "%extract_path%" mkdir "%extract_path%"
-tar -xf "%zip_path%" -C "%extract_path%" >nul 2>&1
-if %errorlevel% neq 0 powershell -Command "Expand-Archive -Path '%zip_path%' -DestinationPath '%extract_path%' -Force"
-
-del "%zip_path%" /f /q >nul 2>&1
-
-echo Iniciando Madium...
-if exist "%extract_path%\Madium-Bootstrapper.exe" start "" "%extract_path%\Madium-Bootstrapper.exe"
-if not exist "%extract_path%\Madium-Bootstrapper.exe" echo [!] Erro: Madium-Bootstrapper.exe nao encontrado.
-
-pause
+if "%opt%"=="1" goto nova_versao_key
+if "%opt%"=="2" goto deletar_madium
+if "%opt%"=="3" goto dependencias
+if "%opt%"=="4" goto baixar_fishstrap
+if "%opt%"=="5" exit
 goto menu
 
 :nova_versao_key
@@ -113,7 +80,7 @@ where dotnet >nul 2>&1
 if %errorlevel% equ 0 (
     powershell -Command "dotnet --list-runtimes" | findstr /i "Microsoft.WindowsDesktop.App 8.0" >nul
     if !errorlevel! equ 0 set "dotnet8_installed=1"
- )
+)
 if %dotnet8_installed% equ 0 if exist "%ProgramFiles%\dotnet\shared\Microsoft.WindowsDesktop.App\8.0*" set "dotnet8_installed=1"
 
 set "vcredist64_installed=0"
@@ -134,7 +101,7 @@ if %dotnet8_installed% equ 1 (echo    - JA INSTALADO.) else (
     curl -L -o "%temp%\dotnet8.exe" "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
     start /wait "" "%temp%\dotnet8.exe" /install /quiet /norestart
     del "%temp%\dotnet8.exe" /f /q >nul 2>&1
- )
+)
 
 echo [2/4] Visual C++ x64:
 if %vcredist64_installed% equ 1 (echo    - JA INSTALADO.) else (
@@ -142,7 +109,7 @@ if %vcredist64_installed% equ 1 (echo    - JA INSTALADO.) else (
     curl -L -o "%temp%\vc64.exe" "https://aka.ms/vc14/vc_redist.x64.exe"
     start /wait "" "%temp%\vc64.exe" /install /quiet /norestart
     del "%temp%\vc64.exe" /f /q >nul 2>&1
- )
+)
 
 echo [3/4] Visual C++ x86:
 if %vcredist86_installed% equ 1 (echo    - JA INSTALADO.) else (
@@ -150,7 +117,7 @@ if %vcredist86_installed% equ 1 (echo    - JA INSTALADO.) else (
     curl -L -o "%temp%\vc86.exe" "https://aka.ms/vc14/vc_redist.x86.exe"
     start /wait "" "%temp%\vc86.exe" /install /quiet /norestart
     del "%temp%\vc86.exe" /f /q >nul 2>&1
- )
+)
 
 echo [4/4] WebView2:
 if %webview2_installed% equ 1 (echo    - JA INSTALADO.) else (
@@ -158,7 +125,7 @@ if %webview2_installed% equ 1 (echo    - JA INSTALADO.) else (
     curl -L -o "%temp%\wv2.exe" "https://go.microsoft.com/fwlink/?linkid=2124701"
     start /wait "" "%temp%\wv2.exe" /silent /install
     del "%temp%\wv2.exe" /f /q >nul 2>&1
- )
+)
 
 echo.
 echo Operacao concluida.
