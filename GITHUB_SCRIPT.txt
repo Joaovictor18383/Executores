@@ -17,7 +17,7 @@ cls
 echo ==================================================
 echo              MADIUM MANAGER - MENU
 echo ==================================================
-echo [1] nova versao do madium mais tem key
+echo [1] Madium
 echo [2] Deletar arquivos do Madium (Limpeza)
 echo [3] Baixar e Instalar Dependencias
 echo [4] Baixar e Instalar Fishstrap
