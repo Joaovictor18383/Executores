@@ -21,7 +21,8 @@ echo [1] Madium
 echo [2] Deletar arquivos do Madium
 echo [3] Baixar e Instalar Dependencias
 echo [4] Baixar e Instalar Fishstrap
-echo [5] Sair
+echo [5] Baixar Roblox Account Manager
+echo [6] Sair
 echo ==================================================
 set /p opt="Escolha uma opcao: "
 
@@ -29,7 +30,8 @@ if "%opt%"=="1" goto nova_versao_key
 if "%opt%"=="2" goto deletar_madium
 if "%opt%"=="3" goto dependencias
 if "%opt%"=="4" goto baixar_fishstrap
-if "%opt%"=="5" exit
+if "%opt%"=="5" goto baixar_ram
+if "%opt%"=="6" exit
 goto menu
 
 :nova_versao_key
@@ -148,5 +150,42 @@ if exist "%temp%\Fishstrap.exe" start "" "%temp%\Fishstrap.exe" && timeout /t 10
 
 echo.
 echo Operacao concluida.
+pause
+goto menu
+
+:baixar_ram
+cls
+echo ==================================================
+echo          BAIXANDO ROBLOX ACCOUNT MANAGER
+echo ==================================================
+set "ram_zip=%temp%\RobloxAccountManager.zip"
+set "ram_dir=%USERPROFILE%\Downloads\Roblox Account Manager"
+
+echo Procurando a versao mais recente no GitHub...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $r=Invoke-RestMethod 'https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest'; $a=$r.assets ^| Where-Object { $_.name -like '*.zip' } ^| Select-Object -First 1; if(-not $a){throw 'Nenhum ZIP encontrado na release mais recente'}; Invoke-WebRequest -Uri $a.browser_download_url -OutFile '%ram_zip%'"
+
+if not exist "%ram_zip%" (
+    echo [!] Nao foi possivel baixar o Roblox Account Manager.
+    pause
+    goto menu
+)
+
+echo Extraindo para "%ram_dir%"...
+if exist "%ram_dir%" rmdir /S /Q "%ram_dir%" >nul 2>&1
+mkdir "%ram_dir%" >nul 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '%ram_zip%' -DestinationPath '%ram_dir%' -Force"
+
+if errorlevel 1 (
+    echo [!] O download terminou, mas ocorreu um erro ao extrair.
+    del "%ram_zip%" /f /q >nul 2>&1
+    pause
+    goto menu
+)
+
+del "%ram_zip%" /f /q >nul 2>&1
+echo.
+echo Roblox Account Manager baixado com sucesso.
+echo Pasta: %ram_dir%
+start "" "%ram_dir%"
 pause
 goto menu
