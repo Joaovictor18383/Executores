@@ -18,20 +18,18 @@ echo ==================================================
 echo              MADIUM MANAGER - MENU
 echo ==================================================
 echo [1] Madium
-echo [2] Deletar arquivos do Madium
-echo [3] Baixar e Instalar Dependencias
-echo [4] Baixar e Instalar Fishstrap
-echo [5] Baixar Roblox Account Manager
-echo [6] Sair
+echo [2] Baixar e Instalar Dependencias
+echo [3] Baixar e Instalar Fishstrap
+echo [4] Baixar Roblox Account Manager
+echo [5] Sair
 echo ==================================================
 set /p opt="Escolha uma opcao: "
 
 if "%opt%"=="1" goto nova_versao_key
-if "%opt%"=="2" goto deletar_madium
-if "%opt%"=="3" goto dependencias
-if "%opt%"=="4" goto baixar_fishstrap
-if "%opt%"=="5" goto baixar_ram
-if "%opt%"=="6" exit
+if "%opt%"=="2" goto dependencias
+if "%opt%"=="3" goto baixar_fishstrap
+if "%opt%"=="4" goto baixar_ram
+if "%opt%"=="5" exit
 goto menu
 
 :nova_versao_key
@@ -55,19 +53,6 @@ del "%inst_path%" /f /q >nul 2>&1
 
 echo.
 echo Operacao concluida.
-pause
-goto menu
-
-:deletar_madium
-cls
-echo Limpando arquivos do Madium...
-taskkill /F /IM Madium-Bootstrapper.exe >nul 2>&1
-taskkill /F /IM Madium.exe >nul 2>&1
-taskkill /F /IM madium.exe >nul 2>&1
-taskkill /F /IM Loader.exe >nul 2>&1
-timeout /t 1 /nobreak >nul
-rmdir /S /Q "%LocalAppData%\Madium" >nul 2>&1
-echo Limpeza concluida.
 pause
 goto menu
 
