@@ -1,28 +1,42 @@
 @echo off
-title Madium Manager [Sky land]
-setlocal enabledelayedexpansion
+title Madium Manager - Console
+setlocal EnableExtensions EnableDelayedExpansion
+chcp 65001 >nul
+color 0B
+mode con: cols=96 lines=30
 
 :: Verifica privilégios de administrador
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ==================================================
-    echo    SOLICITANDO PRIVILEGIOS DE ADMINISTRADOR...
-    echo ==================================================
+    cls
+    echo ================================================================
+    echo                SOLICITANDO PRIVILEGIOS DE ADMINISTRADOR
+    echo ================================================================
     powershell -NoProfile -Command "Start-Process '%~f0' -Verb RunAs"
     exit /b
 )
 
+goto menu
+
 :menu
 cls
-echo ==================================================
-echo              MADIUM MANAGER - MENU
-echo ==================================================
-echo [1] Madium
-echo [2] Baixar e Instalar Dependencias
-echo [3] Baixar e Instalar Fishstrap
-echo [4] Baixar Roblox Account Manager
-echo [5] Sair
-echo ==================================================
+echo.
+echo                ==================================================
+echo.
+echo                         MADIUM MANAGER
+echo.
+echo                ==================================================
+echo.
+echo                         [1] Baixar / Atualizar Madium
+echo                         [2] Baixar e Instalar Dependencias
+echo                         [3] Baixar e Instalar Fishstrap
+echo                         [4] Baixar Roblox Account Manager
+echo                         [5] Sair
+echo.
+echo                ==================================================
+echo.
+echo   Windows 10/11 ^| Madium Manager                                   Status: pronto
+echo.
 set /p opt="Escolha uma opcao: "
 
 if "%opt%"=="1" goto nova_versao_key
@@ -34,20 +48,28 @@ goto menu
 
 :nova_versao_key
 cls
-echo ==================================================
-echo         NOVA VERSAO DO MADIUM MAIS TEM KEY
-echo ==================================================
+echo ================================================================
+echo                     BAIXAR / ATUALIZAR MADIUM
+echo ================================================================
 set "inst_url=https://files.manuscdn.com/user_upload_by_module/session_file/310519663151269258/KMFVNDQmHinAehOS.exe"
 set "inst_path=%temp%\Madium_Installer_Key.exe"
 
+echo.
 echo Baixando instalador...
 curl -L -o "%inst_path%" "%inst_url%"
 
-if not exist "%inst_path%" echo [!] Erro no download do instalador. && pause && goto menu
+if not exist "%inst_path%" (
+    echo.
+    echo [!] Erro no download do instalador.
+    pause
+    goto menu
+)
 
+echo.
 echo Iniciando instalacao...
 start /wait "" "%inst_path%"
 
+echo.
 echo Limpando arquivos temporarios...
 del "%inst_path%" /f /q >nul 2>&1
 
@@ -58,9 +80,9 @@ goto menu
 
 :dependencias
 cls
-echo ==================================================
-echo             VERIFICANDO DEPENDENCIAS
-echo ==================================================
+echo ================================================================
+echo                    VERIFICANDO DEPENDENCIAS
+echo ================================================================
 
 set "dotnet8_installed=0"
 where dotnet >nul 2>&1
@@ -82,33 +104,45 @@ set "webview2_installed=0"
 reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3C4FE00-EFC5-498D-9529-EE5816BB8851}" /v "pv" >nul 2>&1 && set "webview2_installed=1"
 if %webview2_installed% equ 0 if exist "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
 
-echo [1/4] .NET Runtime 8.0: 
-if %dotnet8_installed% equ 1 (echo    - JA INSTALADO.) else (
-    echo    - BAIXANDO...
+echo.
+echo [1/4] .NET Runtime 8.0:
+if %dotnet8_installed% equ 1 (
+    echo     - JA INSTALADO.
+) else (
+    echo     - BAIXANDO...
     curl -L -o "%temp%\dotnet8.exe" "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
     start /wait "" "%temp%\dotnet8.exe" /install /quiet /norestart
     del "%temp%\dotnet8.exe" /f /q >nul 2>&1
 )
 
+echo.
 echo [2/4] Visual C++ x64:
-if %vcredist64_installed% equ 1 (echo    - JA INSTALADO.) else (
-    echo    - BAIXANDO...
+if %vcredist64_installed% equ 1 (
+    echo     - JA INSTALADO.
+) else (
+    echo     - BAIXANDO...
     curl -L -o "%temp%\vc64.exe" "https://aka.ms/vc14/vc_redist.x64.exe"
     start /wait "" "%temp%\vc64.exe" /install /quiet /norestart
     del "%temp%\vc64.exe" /f /q >nul 2>&1
 )
 
+echo.
 echo [3/4] Visual C++ x86:
-if %vcredist86_installed% equ 1 (echo    - JA INSTALADO.) else (
-    echo    - BAIXANDO...
+if %vcredist86_installed% equ 1 (
+    echo     - JA INSTALADO.
+) else (
+    echo     - BAIXANDO...
     curl -L -o "%temp%\vc86.exe" "https://aka.ms/vc14/vc_redist.x86.exe"
     start /wait "" "%temp%\vc86.exe" /install /quiet /norestart
     del "%temp%\vc86.exe" /f /q >nul 2>&1
 )
 
+echo.
 echo [4/4] WebView2:
-if %webview2_installed% equ 1 (echo    - JA INSTALADO.) else (
-    echo    - BAIXANDO...
+if %webview2_installed% equ 1 (
+    echo     - JA INSTALADO.
+) else (
+    echo     - BAIXANDO...
     curl -L -o "%temp%\wv2.exe" "https://go.microsoft.com/fwlink/?linkid=2124701"
     start /wait "" "%temp%\wv2.exe" /silent /install
     del "%temp%\wv2.exe" /f /q >nul 2>&1
@@ -121,17 +155,26 @@ goto menu
 
 :baixar_fishstrap
 cls
-echo ==================================================
-echo            BAIXANDO FISHSTRAP E DEPENDENCIAS
-echo ==================================================
+echo ================================================================
+echo                    BAIXANDO FISHSTRAP
+echo ================================================================
 
+echo.
 echo [1/2] Baixando .NET 6.0 Desktop Runtime...
 curl -L -o "%temp%\dotnet6.exe" "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/6.0.36/windowsdesktop-runtime-6.0.36-win-x64.exe"
-if exist "%temp%\dotnet6.exe" start /wait "" "%temp%\dotnet6.exe" /install /quiet /norestart && del "%temp%\dotnet6.exe" /f /q >nul 2>&1
+if exist "%temp%\dotnet6.exe" (
+    start /wait "" "%temp%\dotnet6.exe" /install /quiet /norestart
+    del "%temp%\dotnet6.exe" /f /q >nul 2>&1
+)
 
+echo.
 echo [2/2] Baixando Fishstrap...
 curl -L -o "%temp%\Fishstrap.exe" "https://fishstrap.app/Fishstrap.exe"
-if exist "%temp%\Fishstrap.exe" start "" "%temp%\Fishstrap.exe" && timeout /t 10 /nobreak >nul && del "%temp%\Fishstrap.exe" /f /q >nul 2>&1
+if exist "%temp%\Fishstrap.exe" (
+    start "" "%temp%\Fishstrap.exe"
+    timeout /t 10 /nobreak >nul
+    del "%temp%\Fishstrap.exe" /f /q >nul 2>&1
+)
 
 echo.
 echo Operacao concluida.
@@ -140,27 +183,31 @@ goto menu
 
 :baixar_ram
 cls
-echo ==================================================
-echo          BAIXANDO ROBLOX ACCOUNT MANAGER
-echo ==================================================
+echo ================================================================
+echo                 BAIXANDO ROBLOX ACCOUNT MANAGER
+echo ================================================================
 set "ram_zip=%temp%\RobloxAccountManager.zip"
 set "ram_dir=%USERPROFILE%\Downloads\Roblox Account Manager"
 
+echo.
 echo Procurando a versao mais recente no GitHub...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $r=Invoke-RestMethod 'https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest'; $a=$r.assets ^| Where-Object { $_.name -like '*.zip' } ^| Select-Object -First 1; if(-not $a){throw 'Nenhum ZIP encontrado na release mais recente'}; Invoke-WebRequest -Uri $a.browser_download_url -OutFile '%ram_zip%'"
 
 if not exist "%ram_zip%" (
+    echo.
     echo [!] Nao foi possivel baixar o Roblox Account Manager.
     pause
     goto menu
 )
 
+echo.
 echo Extraindo para "%ram_dir%"...
 if exist "%ram_dir%" rmdir /S /Q "%ram_dir%" >nul 2>&1
 mkdir "%ram_dir%" >nul 2>&1
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '%ram_zip%' -DestinationPath '%ram_dir%' -Force"
 
 if errorlevel 1 (
+    echo.
     echo [!] O download terminou, mas ocorreu um erro ao extrair.
     del "%ram_zip%" /f /q >nul 2>&1
     pause
