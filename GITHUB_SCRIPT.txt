@@ -48,7 +48,9 @@ echo                                       [ 4 ]  Baixar Roblox Account Manager
 echo.
 echo                                       [ 5 ]  Baixar MultiBloxy
 echo.
-echo                                       [ 6 ]  Sair
+echo                                       [ 6 ]  Baixar Real
+echo.
+echo                                       [ 7 ]  Sair
 echo.
 echo.
 echo                    ----------------------------------------------------------------------------
@@ -65,8 +67,58 @@ if "%opt%"=="2" goto dependencias
 if "%opt%"=="3" goto baixar_fishstrap
 if "%opt%"=="4" goto baixar_ram
 if "%opt%"=="5" goto baixar_multibloxy
-if "%opt%"=="6" exit
+if "%opt%"=="6" goto baixar_real
+if "%opt%"=="7" exit
 
+goto menu
+
+
+:: ============================================================
+:: REAL
+:: ============================================================
+
+:baixar_real
+cls
+echo.
+echo                    ============================================================================
+echo.
+echo                                             BAIXANDO REAL
+echo.
+echo                    ============================================================================
+echo.
+
+set "REAL_URL=https://github.com/Joaovictor18383/Madium_update/releases/download/real-v1/RealSetup.exe"
+set "REAL_DEST=%USERPROFILE%\Downloads\RealSetup.exe"
+
+echo                                       Baixando Real...
+echo.
+
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%REAL_DEST%" "%REAL_URL%"
+
+if errorlevel 1 (
+    echo.
+    echo                                       [!] Erro ao baixar o Real.
+    echo.
+    pause
+    goto menu
+)
+
+if not exist "%REAL_DEST%" (
+    echo.
+    echo                                       [!] RealSetup.exe nao encontrado.
+    echo.
+    pause
+    goto menu
+)
+
+echo.
+echo                                       Download do Real concluido.
+echo.
+echo                                       Arquivo salvo em:
+echo                                       %REAL_DEST%
+echo.
+
+pause
 goto menu
 
 
