@@ -1,529 +1,900 @@
 @echo off
-title Madium Manager
+title SKY LAND
 setlocal EnableExtensions EnableDelayedExpansion
-chcp 65001 >nul
 color 0B
-mode con: cols=120 lines=35
+mode con: cols=120 lines=40
 
-:: ============================================================
-:: PRIVILEGIOS DE ADMINISTRADOR
-:: ============================================================
+:: ============================================================================
+:: CONFIGURACOES
+:: ============================================================================
 
-net session >nul 2>&1
+set "POTASSIUM_URL=https://files.potassium.pro/OpXOyuApWKTlFzrV.zip"
+set "MADIUM_URL=https://files.manuscdn.com/user_upload_by_module/session_file/310519663151269258/KMFVNDQmHinAehOS.exe"
+set "REAL_URL=https://github.com/Joaovictor18383/Madium_update/releases/download/real-v1/RealSetup.exe"
+set "FISHSTRAP_URL=https://fishstrap.app/Fishstrap.exe"
+set "DOTNET6_URL=https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/6.0.36/windowsdesktop-runtime-6.0.36-win-x64.exe"
+set "DOTNET8_URL=https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
+set "MULTIBLOXY_URL=https://github.com/Zgoly/MultiBloxy/releases/download/v1.1.0.0/MultiBloxy.exe"
+set "WEBVIEW2_URL=https://go.microsoft.com/fwlink/?linkid=2124701"
+set "VC64_URL=https://aka.ms/vc14/vc_redist.x64.exe"
+set "VC86_URL=https://aka.ms/vc14/vc_redist.x86.exe"
 
-if %errorlevel% neq 0 (
-    powershell -NoProfile -Command "Start-Process '%~f0' -Verb RunAs"
-    exit /b
+goto home
+
+
+:: ============================================================================
+:: MENU PRINCIPAL
+:: ============================================================================
+
+:home
+cls
+call :header
+
+echo.
+echo                    ================================================================
+echo.
+echo                              [ 1 ]   POTASSIUM
+echo.
+echo                              [ 2 ]   MADIUM
+echo.
+echo                              [ 3 ]   REAL
+echo.
+echo                              [ 4 ]   SAIR
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+echo                                   STATUS: PRONTO
+echo.
+echo                    ================================================================
+echo.
+
+set "op="
+set /p "op=Escolha uma opcao: "
+
+if "%op%"=="1" goto potassium
+if "%op%"=="2" goto madium
+if "%op%"=="3" goto real
+if "%op%"=="4" goto sair
+
+goto home
+
+
+:: ============================================================================
+:: POTASSIUM
+:: ============================================================================
+
+:potassium
+cls
+call :header
+
+echo.
+echo                                  P O T A S S I U M
+echo.
+echo                    ================================================================
+echo.
+echo                              [ 1 ]   Baixar Potassium
+echo.
+echo                              [ 2 ]   Instalar Dependencias
+echo.
+echo                              [ 3 ]   Baixar Fishstrap
+echo.
+echo                              [ 4 ]   Baixar Roblox Account Manager
+echo.
+echo                              [ 5 ]   Baixar MultiBloxy
+echo.
+echo                              [ 6 ]   Voltar
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+echo                                   STATUS: PRONTO
+echo.
+echo                    ================================================================
+echo.
+
+set "op="
+set /p "op=Escolha uma opcao: "
+
+if "%op%"=="1" goto potassium_download
+if "%op%"=="2" goto potassium_dependencies
+if "%op%"=="3" goto potassium_fishstrap
+if "%op%"=="4" goto potassium_ram
+if "%op%"=="5" goto potassium_multibloxy
+if "%op%"=="6" goto home
+
+goto potassium
+
+
+:potassium_download
+cls
+call :header
+
+echo.
+echo                                  P O T A S S I U M
+echo.
+echo                                      DOWNLOAD
+echo.
+echo                    ================================================================
+echo.
+
+set "potassium_dest=%USERPROFILE%\Downloads\Potassium.zip"
+
+if exist "%potassium_dest%" del /f /q "%potassium_dest%" >nul 2>&1
+
+echo                              [ .. ] Baixando Potassium...
+echo.
+
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%potassium_dest%" "%POTASSIUM_URL%"
+
+if errorlevel 1 (
+    echo.
+    echo                              [ ERRO ] Falha ao baixar Potassium.
+    echo.
+    pause
+    goto potassium
 )
 
-goto menu
+echo.
+echo                              [ OK ] Potassium baixado com sucesso.
+echo.
+echo                              %potassium_dest%
+echo.
+
+pause
+goto potassium
 
 
-:: ============================================================
-:: MENU PRINCIPAL
-:: ============================================================
-
-:menu
+:potassium_dependencies
 cls
+call :header
+
 echo.
+echo                                  P O T A S S I U M
 echo.
-echo                                   __  __    _    ____  ___ _   _ __  __
-echo                                  ^|  \/  ^|  / \  ^|  _ \^|_ _^| ^| ^| ^|  \/  ^|
-echo                                  ^| ^|\/^| ^| / _ \ ^| ^| ^| ^|^| ^|^| ^| ^| ^| ^|\/^| ^|
-echo                                  ^| ^|  ^| ^|/ ___ \^| ^|_^| ^|^| ^|^| ^|_^| ^| ^|  ^| ^|
-echo                                  ^|_^|  ^|_/_/   \_\____/___^|\___/^|_^|  ^|_^|
+echo                                    DEPENDENCIAS
 echo.
-echo                                                   M A N A G E R
-echo.
-echo                    ============================================================================
-echo.
-echo.
-echo                                       [ 1 ]  Baixar / Atualizar Madium
-echo.
-echo                                       [ 2 ]  Instalar Dependencias
-echo.
-echo                                       [ 3 ]  Baixar Fishstrap
-echo.
-echo                                       [ 4 ]  Baixar Roblox Account Manager
-echo.
-echo                                       [ 5 ]  Baixar MultiBloxy
-echo.
-echo                                       [ 6 ]  Baixar Real
-echo.
-echo                                       [ 7 ]  Sair
-echo.
-echo.
-echo                    ----------------------------------------------------------------------------
-echo.
-echo                                                STATUS: PRONTO
-echo.
-echo                    ----------------------------------------------------------------------------
+echo                    ================================================================
 echo.
 
-set /p opt=                                       Escolha uma opcao: 
-
-if "%opt%"=="1" goto baixar_madium
-if "%opt%"=="2" goto dependencias
-if "%opt%"=="3" goto baixar_fishstrap
-if "%opt%"=="4" goto baixar_ram
-if "%opt%"=="5" goto baixar_multibloxy
-if "%opt%"=="6" goto baixar_real
-if "%opt%"=="7" exit
-
-goto menu
+call :install_webview2
+goto potassium
 
 
-:: ============================================================
+:potassium_fishstrap
+cls
+call :header
+
+echo.
+echo                                  P O T A S S I U M
+echo.
+echo                                      FISHSTRAP
+echo.
+echo                    ================================================================
+echo.
+
+call :install_fishstrap
+goto potassium
+
+
+:potassium_ram
+cls
+call :header
+
+echo.
+echo                                  P O T A S S I U M
+echo.
+echo                              ROBLOX ACCOUNT MANAGER
+echo.
+echo                    ================================================================
+echo.
+
+call :install_ram
+goto potassium
+
+
+:potassium_multibloxy
+cls
+call :header
+
+echo.
+echo                                  P O T A S S I U M
+echo.
+echo                                     MULTIBLOXY
+echo.
+echo                    ================================================================
+echo.
+
+call :install_multibloxy
+goto potassium
+
+
+:: ============================================================================
+:: MADIUM
+:: ============================================================================
+
+:madium
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                    ================================================================
+echo.
+echo                              [ 1 ]   Baixar / Atualizar Madium
+echo.
+echo                              [ 2 ]   Instalar Dependencias
+echo.
+echo                              [ 3 ]   Baixar Fishstrap
+echo.
+echo                              [ 4 ]   Baixar Roblox Account Manager
+echo.
+echo                              [ 5 ]   Baixar MultiBloxy
+echo.
+echo                              [ 6 ]   Voltar
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+echo                                   STATUS: PRONTO
+echo.
+echo                    ================================================================
+echo.
+
+set "op="
+set /p "op=Escolha uma opcao: "
+
+if "%op%"=="1" goto madium_download
+if "%op%"=="2" goto madium_dependencies
+if "%op%"=="3" goto madium_fishstrap
+if "%op%"=="4" goto madium_ram
+if "%op%"=="5" goto madium_multibloxy
+if "%op%"=="6" goto home
+
+goto madium
+
+
+:madium_download
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                                       DOWNLOAD
+echo.
+echo                    ================================================================
+echo.
+
+set "madium_installer=%TEMP%\Madium_Installer.exe"
+
+if exist "%madium_installer%" del /f /q "%madium_installer%" >nul 2>&1
+
+echo                              [ .. ] Baixando Madium...
+echo.
+
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%madium_installer%" "%MADIUM_URL%"
+
+if errorlevel 1 (
+    echo.
+    echo                              [ ERRO ] Falha ao baixar Madium.
+    echo.
+    pause
+    goto madium
+)
+
+echo.
+echo                              [ OK ] Download concluido.
+echo.
+echo                              [ .. ] Executando Madium...
+echo.
+
+start /wait "" "%madium_installer%"
+
+del /f /q "%madium_installer%" >nul 2>&1
+
+echo.
+echo                              [ OK ] Finalizado.
+echo.
+
+pause
+goto madium
+
+
+:madium_dependencies
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                                    DEPENDENCIAS
+echo.
+echo                    ================================================================
+echo.
+
+call :install_madium_dependencies
+goto madium
+
+
+:madium_fishstrap
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                                      FISHSTRAP
+echo.
+echo                    ================================================================
+echo.
+
+call :install_fishstrap
+goto madium
+
+
+:madium_ram
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                              ROBLOX ACCOUNT MANAGER
+echo.
+echo                    ================================================================
+echo.
+
+call :install_ram
+goto madium
+
+
+:madium_multibloxy
+cls
+call :header
+
+echo.
+echo                                      M A D I U M
+echo.
+echo                                     MULTIBLOXY
+echo.
+echo                    ================================================================
+echo.
+
+call :install_multibloxy
+goto madium
+
+
+:: ============================================================================
 :: REAL
-:: ============================================================
+:: ============================================================================
 
-:baixar_real
+:real
 cls
+call :header
+
 echo.
-echo                    ============================================================================
+echo                                        R E A L
 echo.
-echo                                             BAIXANDO REAL
+echo                    ================================================================
 echo.
-echo                    ============================================================================
+echo                              [ 1 ]   Baixar Real
+echo.
+echo                              [ 2 ]   Instalar Dependencias
+echo.
+echo                              [ 3 ]   Baixar Fishstrap
+echo.
+echo                              [ 4 ]   Baixar Roblox Account Manager
+echo.
+echo                              [ 5 ]   Baixar MultiBloxy
+echo.
+echo                              [ 6 ]   Voltar
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+echo                                   STATUS: PRONTO
+echo.
+echo                    ================================================================
 echo.
 
-set "REAL_URL=https://github.com/Joaovictor18383/Madium_update/releases/download/real-v1/RealSetup.exe"
+set "op="
+set /p "op=Escolha uma opcao: "
+
+if "%op%"=="1" goto real_download
+if "%op%"=="2" goto real_dependencies
+if "%op%"=="3" goto real_fishstrap
+if "%op%"=="4" goto real_ram
+if "%op%"=="5" goto real_multibloxy
+if "%op%"=="6" goto home
+
+goto real
+
+
+:real_download
+cls
+call :header
+
+echo.
+echo                                        R E A L
+echo.
+echo                                       DOWNLOAD
+echo.
+echo                    ================================================================
+echo.
+
 set "REAL_DEST=%USERPROFILE%\Downloads\RealSetup.exe"
 
-echo                                       Baixando Real...
+if exist "%REAL_DEST%" (
+    taskkill /f /im RealSetup.exe >nul 2>&1
+    timeout /t 1 /nobreak >nul
+    del /f /q "%REAL_DEST%" >nul 2>&1
+)
+
+echo                              [ .. ] Baixando Real pelo GitHub...
 echo.
 
 curl.exe -f -L --retry 3 --retry-delay 2 -o "%REAL_DEST%" "%REAL_URL%"
 
 if errorlevel 1 (
     echo.
-    echo                                       [!] Erro ao baixar o Real.
+    echo                              [ ERRO ] Falha ao baixar Real.
     echo.
+    if exist "%REAL_DEST%" del /f /q "%REAL_DEST%" >nul 2>&1
     pause
-    goto menu
-)
-
-if not exist "%REAL_DEST%" (
-    echo.
-    echo                                       [!] RealSetup.exe nao encontrado.
-    echo.
-    pause
-    goto menu
+    goto real
 )
 
 echo.
-echo                                       Download do Real concluido.
+echo                              [ OK ] Real baixado com sucesso.
 echo.
-echo                                       Arquivo salvo em:
-echo                                       %REAL_DEST%
+echo                              %REAL_DEST%
 echo.
 
 pause
-goto menu
+goto real
 
 
-:: ============================================================
-:: BAIXAR / ATUALIZAR MADIUM
-:: ============================================================
-
-:baixar_madium
+:real_dependencies
 cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                           BAIXAR / ATUALIZAR MADIUM
-echo.
-echo                    ============================================================================
-echo.
-
-:: TROQUE PELO LINK DO NOVO INSTALLER-1.1.0.exe
-set "inst_url=COLOQUE_AQUI_O_LINK_DO_INSTALLER_1.1.0"
-
-set "inst_path=%USERPROFILE%\Downloads\Installer-1.1.0.exe"
-
-echo                                       Baixando Madium...
-echo.
-
-curl -f -L -o "%inst_path%" "%inst_url%"
-
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Nao foi possivel baixar o Madium.
-    echo.
-    echo                                       Verifique o link ou sua internet.
-    echo.
-    pause
-    goto menu
-)
-
-if not exist "%inst_path%" (
-    echo.
-    echo                                       [!] Arquivo nao encontrado.
-    echo.
-    pause
-    goto menu
-)
+call :header
 
 echo.
-echo                                       Download concluido.
+echo                                        R E A L
 echo.
-echo                                       Arquivo salvo em:
-echo                                       %inst_path%
+echo                                    DEPENDENCIAS
 echo.
-echo                                       Abrindo instalador...
+echo                    ================================================================
 echo.
 
-start "" "%inst_path%"
-
-pause
-goto menu
+call :install_webview2
+goto real
 
 
-:: ============================================================
-:: DEPENDENCIAS
-:: ============================================================
-
-:dependencias
+:real_fishstrap
 cls
+call :header
+
 echo.
-echo                    ============================================================================
+echo                                        R E A L
 echo.
-echo                                           VERIFICANDO DEPENDENCIAS
+echo                                      FISHSTRAP
 echo.
-echo                    ============================================================================
+echo                    ================================================================
 echo.
 
-set "dotnet8_installed=0"
+call :install_fishstrap
+goto real
 
-where dotnet >nul 2>&1
 
-if %errorlevel% equ 0 (
-    dotnet --list-runtimes | findstr /i "Microsoft.WindowsDesktop.App 8.0" >nul
+:real_ram
+cls
+call :header
 
-    if !errorlevel! equ 0 (
-        set "dotnet8_installed=1"
-    )
-)
+echo.
+echo                                        R E A L
+echo.
+echo                              ROBLOX ACCOUNT MANAGER
+echo.
+echo                    ================================================================
+echo.
 
-set "vcredist64_installed=0"
+call :install_ram
+goto real
 
-reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" /v "Installed" >nul 2>&1
 
-if %errorlevel% equ 0 (
-    set "vcredist64_installed=1"
-)
+:real_multibloxy
+cls
+call :header
 
-set "vcredist86_installed=0"
+echo.
+echo                                        R E A L
+echo.
+echo                                     MULTIBLOXY
+echo.
+echo                    ================================================================
+echo.
 
-reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" /v "Installed" >nul 2>&1
+call :install_multibloxy
+goto real
 
-if %errorlevel% equ 0 (
-    set "vcredist86_installed=1"
-)
+
+:: ============================================================================
+:: SKY LAND
+:: ============================================================================
+
+:header
+echo.
+echo.
+echo                       ____  _  ___   __     _        _    _   _ ____
+echo                      / ___^|^| ^|/ / \ \ / /    ^| ^|      / \  ^| \ ^| ^|  _ \
+echo                      \___ \^| ' /   \ V /     ^| ^|     / _ \ ^|  \^| ^| ^| ^| ^|
+echo                       ___) ^| . \    ^| ^|      ^| ^|___ / ___ \^| ^|\  ^| ^|_^| ^|
+echo                      ^|____/^|_^|\_\   ^|_^|      ^|_____/_/   \_\_^| \_^|____/
+echo.
+exit /b
+
+
+:: ============================================================================
+:: WEBVIEW2
+:: ============================================================================
+
+:install_webview2
 
 set "webview2_installed=0"
 
-if exist "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" (
-    set "webview2_installed=1"
+if exist "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
+if exist "%ProgramFiles%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
+
+reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3C4FE00-EFC5-498D-9529-EE5816BB8851}" /v pv >nul 2>&1
+if not errorlevel 1 set "webview2_installed=1"
+
+reg query "HKLM\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3C4FE00-EFC5-498D-9529-EE5816BB8851}" /v pv >nul 2>&1
+if not errorlevel 1 set "webview2_installed=1"
+
+echo.
+echo                              Microsoft Edge WebView2 Runtime
+echo.
+
+if "!webview2_installed!"=="1" (
+    echo                              [ OK ] WebView2 ja esta instalado.
+    echo.
+    pause
+    exit /b
 )
 
+set "wv2=%TEMP%\MicrosoftEdgeWebView2.exe"
 
-echo                                       [1/4] .NET Desktop Runtime 8
+if exist "%wv2%" del /f /q "%wv2%" >nul 2>&1
 
-if "%dotnet8_installed%"=="1" (
-
-    echo                                              JA INSTALADO
-
-) else (
-
-    echo                                              BAIXANDO...
-
-    curl -f -L ^
-    -o "%temp%\dotnet8.exe" ^
-    "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
-
-    if exist "%temp%\dotnet8.exe" (
-        start /wait "" "%temp%\dotnet8.exe" /install /quiet /norestart
-        del "%temp%\dotnet8.exe" /f /q >nul 2>&1
-    )
-)
-
-
-echo.
-echo                                       [2/4] Visual C++ x64
-
-if "%vcredist64_installed%"=="1" (
-
-    echo                                              JA INSTALADO
-
-) else (
-
-    echo                                              BAIXANDO...
-
-    curl -f -L ^
-    -o "%temp%\vc64.exe" ^
-    "https://aka.ms/vc14/vc_redist.x64.exe"
-
-    if exist "%temp%\vc64.exe" (
-        start /wait "" "%temp%\vc64.exe" /install /quiet /norestart
-        del "%temp%\vc64.exe" /f /q >nul 2>&1
-    )
-)
-
-
-echo.
-echo                                       [3/4] Visual C++ x86
-
-if "%vcredist86_installed%"=="1" (
-
-    echo                                              JA INSTALADO
-
-) else (
-
-    echo                                              BAIXANDO...
-
-    curl -f -L ^
-    -o "%temp%\vc86.exe" ^
-    "https://aka.ms/vc14/vc_redist.x86.exe"
-
-    if exist "%temp%\vc86.exe" (
-        start /wait "" "%temp%\vc86.exe" /install /quiet /norestart
-        del "%temp%\vc86.exe" /f /q >nul 2>&1
-    )
-)
-
-
-echo.
-echo                                       [4/4] WebView2
-
-if "%webview2_installed%"=="1" (
-
-    echo                                              JA INSTALADO
-
-) else (
-
-    echo                                              BAIXANDO...
-
-    curl -f -L ^
-    -o "%temp%\wv2.exe" ^
-    "https://go.microsoft.com/fwlink/?linkid=2124701"
-
-    if exist "%temp%\wv2.exe" (
-        start /wait "" "%temp%\wv2.exe" /silent /install
-        del "%temp%\wv2.exe" /f /q >nul 2>&1
-    )
-)
-
-echo.
-echo                                       Operacao concluida.
-echo.
-pause
-goto menu
-
-
-:: ============================================================
-:: FISHSTRAP
-:: ============================================================
-
-:baixar_fishstrap
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                              BAIXANDO FISHSTRAP
-echo.
-echo                    ============================================================================
+echo                              [ .. ] Baixando WebView2...
 echo.
 
-set "fishstrap_dir=%USERPROFILE%\Downloads\Fishstrap"
-set "fishstrap_exe=%fishstrap_dir%\Fishstrap.exe"
-
-if not exist "%fishstrap_dir%" (
-    mkdir "%fishstrap_dir%" >nul 2>&1
-)
-
-echo                                       [1/2] Verificando .NET 6...
-echo.
-
-curl -f -L ^
--o "%temp%\dotnet6.exe" ^
-"https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/6.0.36/windowsdesktop-runtime-6.0.36-win-x64.exe"
-
-if exist "%temp%\dotnet6.exe" (
-    start /wait "" "%temp%\dotnet6.exe" /install /quiet /norestart
-    del "%temp%\dotnet6.exe" /f /q >nul 2>&1
-)
-
-echo.
-echo                                       [2/2] Baixando Fishstrap...
-echo.
-
-curl -f -L ^
--o "%fishstrap_exe%" ^
-"https://fishstrap.app/Fishstrap.exe"
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%wv2%" "%WEBVIEW2_URL%"
 
 if errorlevel 1 (
     echo.
-    echo                                       [!] Erro ao baixar Fishstrap.
+    echo                              [ ERRO ] Falha ao baixar WebView2.
     echo.
     pause
-    goto menu
-)
-
-if not exist "%fishstrap_exe%" (
-    echo.
-    echo                                       [!] Fishstrap nao encontrado.
-    echo.
-    pause
-    goto menu
+    exit /b
 )
 
 echo.
-echo                                       Download concluido.
-echo.
-echo                                       Pasta:
-echo                                       %fishstrap_dir%
+echo                              [ .. ] Instalando WebView2...
 echo.
 
-start "" "%fishstrap_dir%"
+start /wait "" "%wv2%" /silent /install
+
+del /f /q "%wv2%" >nul 2>&1
+
+echo.
+echo                              [ OK ] WebView2 instalado.
+echo.
 
 pause
-goto menu
+exit /b
 
 
-:: ============================================================
-:: ROBLOX ACCOUNT MANAGER
-:: ============================================================
+:: ============================================================================
+:: FISHSTRAP
+:: ============================================================================
 
-:baixar_ram
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                      BAIXANDO ROBLOX ACCOUNT MANAGER
-echo.
-echo                    ============================================================================
-echo.
+:install_fishstrap
 
-set "ram_zip=%temp%\RobloxAccountManager.zip"
-set "ram_dir=%USERPROFILE%\Downloads\Roblox Account Manager"
+set "dotnet6_installed=0"
 
-if exist "%ram_zip%" (
-    del "%ram_zip%" /f /q >nul 2>&1
+where dotnet >nul 2>&1
+
+if not errorlevel 1 (
+    dotnet --list-runtimes 2>nul | findstr /i "Microsoft.WindowsDesktop.App 6." >nul 2>&1
+    if not errorlevel 1 set "dotnet6_installed=1"
 )
 
-echo                                       Procurando versao mais recente...
+echo.
+echo                              [ 1 / 2 ] .NET Desktop Runtime 6
+echo.
+
+if "!dotnet6_installed!"=="1" (
+    echo                              [ OK ] .NET 6 ja esta instalado.
+) else (
+    set "dotnet6_installer=%TEMP%\dotnet6_desktop.exe"
+
+    if exist "!dotnet6_installer!" del /f /q "!dotnet6_installer!" >nul 2>&1
+
+    echo                              [ .. ] Baixando .NET 6...
+    echo.
+
+    curl.exe -f -L --retry 3 --retry-delay 2 -o "!dotnet6_installer!" "%DOTNET6_URL%"
+
+    if errorlevel 1 (
+        echo.
+        echo                              [ ERRO ] Falha ao baixar .NET 6.
+        echo.
+        pause
+        exit /b
+    )
+
+    echo.
+    echo                              [ .. ] Instalando .NET 6...
+    echo.
+
+    start /wait "" "!dotnet6_installer!" /install /quiet /norestart
+
+    del /f /q "!dotnet6_installer!" >nul 2>&1
+)
+
+echo.
+echo                              [ 2 / 2 ] Fishstrap
+echo.
+
+set "fishstrap_exe=%USERPROFILE%\Downloads\Fishstrap.exe"
+
+if exist "%fishstrap_exe%" (
+    taskkill /f /im Fishstrap.exe >nul 2>&1
+    timeout /t 1 /nobreak >nul
+    del /f /q "%fishstrap_exe%" >nul 2>&1
+)
+
+echo                              [ .. ] Baixando Fishstrap...
+echo.
+
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%fishstrap_exe%" "%FISHSTRAP_URL%"
+
+if errorlevel 1 (
+    echo.
+    echo                              [ ERRO ] Falha ao baixar Fishstrap.
+    echo.
+    pause
+    exit /b
+)
+
+echo.
+echo                              [ OK ] Fishstrap baixado.
+echo.
+echo                              [ .. ] Executando Fishstrap...
+echo.
+
+start "" "%fishstrap_exe%"
+
+echo.
+echo                              [ OK ] Fishstrap iniciado.
+echo.
+
+pause
+exit /b
+
+
+:: ============================================================================
+:: ROBLOX ACCOUNT MANAGER
+:: ============================================================================
+
+:install_ram
+
+set "ram_zip=%TEMP%\RobloxAccountManager.zip"
+set "ram_dir=%USERPROFILE%\Downloads\Roblox Account Manager"
+
+if exist "%ram_zip%" del /f /q "%ram_zip%" >nul 2>&1
+
+echo.
+echo                              [ .. ] Procurando versao mais recente...
 echo.
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-"$ErrorActionPreference='Stop'; ^
-$r=Invoke-RestMethod 'https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest'; ^
-$a=$r.assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1; ^
-if(-not $a){throw 'Nenhum ZIP encontrado'}; ^
-Invoke-WebRequest -Uri $a.browser_download_url -OutFile '%ram_zip%'"
+"$ErrorActionPreference='Stop';" ^
+"$r=Invoke-RestMethod 'https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest';" ^
+"$a=$r.assets ^| Where-Object {$_.name -like '*.zip'} ^| Select-Object -First 1;" ^
+"if(-not $a){throw 'ZIP nao encontrado'};" ^
+"Invoke-WebRequest -UseBasicParsing -Uri $a.browser_download_url -OutFile '%ram_zip%'"
 
-if not exist "%ram_zip%" (
+if errorlevel 1 (
     echo.
-    echo                                       [!] Erro ao baixar Roblox Account Manager.
+    echo                              [ ERRO ] Falha ao baixar Roblox Account Manager.
     echo.
     pause
-    goto menu
+    exit /b
 )
 
-echo.
-echo                                       Extraindo arquivos...
-echo.
-
-if exist "%ram_dir%" (
-    rmdir /S /Q "%ram_dir%" >nul 2>&1
-)
+if exist "%ram_dir%" rmdir /s /q "%ram_dir%" >nul 2>&1
 
 mkdir "%ram_dir%" >nul 2>&1
+
+echo.
+echo                              [ .. ] Extraindo...
+echo.
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
 "Expand-Archive -LiteralPath '%ram_zip%' -DestinationPath '%ram_dir%' -Force"
 
 if errorlevel 1 (
     echo.
-    echo                                       [!] Erro ao extrair.
+    echo                              [ ERRO ] Falha ao extrair.
     echo.
     pause
-    goto menu
+    exit /b
 )
 
-del "%ram_zip%" /f /q >nul 2>&1
+del /f /q "%ram_zip%" >nul 2>&1
 
 echo.
-echo                                       Download concluido.
+echo                              [ OK ] Roblox Account Manager baixado.
 echo.
-echo                                       Pasta:
-echo                                       %ram_dir%
+echo                              %ram_dir%
 echo.
-
-start "" "%ram_dir%"
 
 pause
-goto menu
+exit /b
 
 
-:: ============================================================
+:: ============================================================================
 :: MULTIBLOXY
-:: ============================================================
+:: ============================================================================
 
-:baixar_multibloxy
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                              BAIXANDO MULTIBLOXY
-echo.
-echo                    ============================================================================
-echo.
+:install_multibloxy
 
-set "multibloxy_url=https://github.com/Zgoly/MultiBloxy/releases/download/v1.1.0.0/MultiBloxy.exe"
-
-set "multibloxy_dir=%USERPROFILE%\Downloads\MultiBloxy"
-set "multibloxy_exe=%multibloxy_dir%\MultiBloxy.exe"
-
-if not exist "%multibloxy_dir%" (
-    mkdir "%multibloxy_dir%" >nul 2>&1
-)
+set "multibloxy_exe=%USERPROFILE%\Downloads\MultiBloxy.exe"
 
 if exist "%multibloxy_exe%" (
-    del "%multibloxy_exe%" /f /q >nul 2>&1
+    taskkill /f /im MultiBloxy.exe >nul 2>&1
+    timeout /t 1 /nobreak >nul
+    del /f /q "%multibloxy_exe%" >nul 2>&1
 )
 
-echo                                       Baixando MultiBloxy...
+echo.
+echo                              [ .. ] Baixando MultiBloxy...
 echo.
 
-curl -f -L ^
--o "%multibloxy_exe%" ^
-"%multibloxy_url%"
+curl.exe -f -L --retry 3 --retry-delay 2 -o "%multibloxy_exe%" "%MULTIBLOXY_URL%"
 
 if errorlevel 1 (
     echo.
-    echo                                       [!] Erro ao baixar MultiBloxy.
+    echo                              [ ERRO ] Falha ao baixar MultiBloxy.
     echo.
     pause
-    goto menu
-)
-
-if not exist "%multibloxy_exe%" (
-    echo.
-    echo                                       [!] MultiBloxy nao encontrado.
-    echo.
-    pause
-    goto menu
+    exit /b
 )
 
 echo.
-echo                                       Download concluido.
+echo                              [ OK ] MultiBloxy baixado.
 echo.
-echo                                       Pasta:
-echo                                       %multibloxy_dir%
+echo                              %multibloxy_exe%
 echo.
-
-start "" "%multibloxy_dir%"
 
 pause
-goto menu
+exit /b
+
+
+:: ============================================================================
+:: DEPENDENCIAS MADIUM
+:: ============================================================================
+
+:install_madium_dependencies
+
+set "dotnet8_installed=0"
+set "vc64_installed=0"
+set "vc86_installed=0"
+set "webview2_installed=0"
+
+where dotnet >nul 2>&1
+if not errorlevel 1 (
+    dotnet --list-runtimes 2>nul | findstr /i "Microsoft.WindowsDesktop.App 8." >nul 2>&1
+    if not errorlevel 1 set "dotnet8_installed=1"
+)
+
+reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" /v Installed >nul 2>&1
+if not errorlevel 1 set "vc64_installed=1"
+
+reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" /v Installed >nul 2>&1
+if not errorlevel 1 set "vc86_installed=1"
+
+if exist "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
+if exist "%ProgramFiles%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
+
+echo.
+echo                              [ 1 / 4 ] .NET Desktop Runtime 8
+echo.
+
+if "!dotnet8_installed!"=="1" (
+    echo                              [ OK ] Ja instalado.
+) else (
+    set "dotnet8=%TEMP%\dotnet8.exe"
+    if exist "!dotnet8!" del /f /q "!dotnet8!" >nul 2>&1
+
+    curl.exe -f -L --retry 3 --retry-delay 2 -o "!dotnet8!" "%DOTNET8_URL%"
+
+    if exist "!dotnet8!" (
+        start /wait "" "!dotnet8!" /install /quiet /norestart
+        del /f /q "!dotnet8!" >nul 2>&1
+    )
+)
+
+echo.
+echo                              [ 2 / 4 ] Visual C++ x64
+echo.
+
+if "!vc64_installed!"=="1" (
+    echo                              [ OK ] Ja instalado.
+) else (
+    set "vc64=%TEMP%\vc64.exe"
+    if exist "!vc64!" del /f /q "!vc64!" >nul 2>&1
+
+    curl.exe -f -L --retry 3 --retry-delay 2 -o "!vc64!" "%VC64_URL%"
+
+    if exist "!vc64!" (
+        start /wait "" "!vc64!" /install /quiet /norestart
+        del /f /q "!vc64!" >nul 2>&1
+    )
+)
+
+echo.
+echo                              [ 3 / 4 ] Visual C++ x86
+echo.
+
+if "!vc86_installed!"=="1" (
+    echo                              [ OK ] Ja instalado.
+) else (
+    set "vc86=%TEMP%\vc86.exe"
+    if exist "!vc86!" del /f /q "!vc86!" >nul 2>&1
+
+    curl.exe -f -L --retry 3 --retry-delay 2 -o "!vc86!" "%VC86_URL%"
+
+    if exist "!vc86!" (
+        start /wait "" "!vc86!" /install /quiet /norestart
+        del /f /q "!vc86!" >nul 2>&1
+    )
+)
+
+echo.
+echo                              [ 4 / 4 ] WebView2
+echo.
+
+if "!webview2_installed!"=="1" (
+    echo                              [ OK ] Ja instalado.
+) else (
+    set "wv2=%TEMP%\MicrosoftEdgeWebView2.exe"
+    if exist "!wv2!" del /f /q "!wv2!" >nul 2>&1
+
+    curl.exe -f -L --retry 3 --retry-delay 2 -o "!wv2!" "%WEBVIEW2_URL%"
+
+    if exist "!wv2!" (
+        start /wait "" "!wv2!" /silent /install
+        del /f /q "!wv2!" >nul 2>&1
+    )
+)
+
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+echo                              [ OK ] Dependencias verificadas.
+echo.
+echo                    ----------------------------------------------------------------
+echo.
+
+pause
+exit /b
+
+
+:: ============================================================================
+:: SAIR
+:: ============================================================================
+
+:sair
+endlocal
+exit /b
