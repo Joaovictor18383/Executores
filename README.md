@@ -23,7 +23,7 @@ O objetivo é deixar o sistema simples: o usuário abre o loader e ele busca aut
 | Arquivo | Função |
 |---|---|
 | `GITHUB_SCRIPT.txt` | Script principal do SKY LAND |
-| `Madium_Manager_Loader.bat` | Loader que busca e executa a versão mais recente |
+| `SKY_LAND_Loader.bat` | Loader que busca e executa a versão mais recente |
 | `README.md` | Documentação do projeto |
 
 ## ⚡ Como funciona
