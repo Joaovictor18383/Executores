@@ -790,27 +790,59 @@ function Download-Fishstrap {
             Stop-Process -Force -ErrorAction SilentlyContinue
     } catch {}
 
-    Show-Working "Baixando Fishstrap..."
-
-    if (-not (Download-File $FISHSTRAP_URL $destination)) {
-
-        Show-Error "Falha ao baixar Fishstrap."
-        Pause-SkyLand
-        return
-    }
-
-    Show-Success "Fishstrap baixado."
-
-    Show-Working "Executando Fishstrap..."
+    Show-Working "Procurando versao mais recente do Fishstrap..."
 
     try {
 
+        $release = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/fishstrap/fishstrap/releases/latest" `
+            -Headers @{
+                "User-Agent" = "SKY-LAND"
+                "Accept" = "application/vnd.github+json"
+            } `
+            -ErrorAction Stop
+
+        $asset = $release.assets |
+            Where-Object {
+                $_.name -ieq "Fishstrap.exe"
+            } |
+            Select-Object -First 1
+
+        if (-not $asset) {
+            throw "Fishstrap.exe nao encontrado na release mais recente."
+        }
+
+        $downloadUrl = $asset.browser_download_url
+
+        if ([string]::IsNullOrWhiteSpace($downloadUrl)) {
+            throw "Link de download do Fishstrap nao encontrado."
+        }
+
+        Show-Working "Baixando Fishstrap $($release.tag_name)..."
+
+        if (-not (Download-File $downloadUrl $destination)) {
+            throw "Falha no download do Fishstrap."
+        }
+
+        Show-Success "Fishstrap $($release.tag_name) baixado."
+
+        Show-Working "Executando Fishstrap..."
+
         Start-Process -FilePath $destination
+
         Show-Success "Fishstrap iniciado."
 
     } catch {
 
-        Show-Error "Nao foi possivel iniciar Fishstrap."
+        Show-Error "Falha ao baixar Fishstrap."
+
+        if ($_.Exception.Message) {
+            Write-Host ""
+            Center-Line $_.Exception.Message DarkGray
+        }
+
+        Pause-SkyLand
+        return
     }
 
     Pause-SkyLand
