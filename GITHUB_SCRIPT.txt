@@ -30,9 +30,9 @@ $POTASSIUM_URL = "https://files.potassium.pro/OpXOyuApWKTlFzrV.zip"
 
 $MADIUM_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663151269258/KMFVNDQmHinAehOS.exe"
 
-$REAL_URL = "https://github.com/Joaovictor18383/Madium_update/releases/download/real-v1/RealSetup.exe"
+$REAL_URL = "https://github.com/Joaovictor18383/Executores/releases/download/real-v1/RealSetup.exe"
 
-$FISHSTRAP_URL = "https://fishstrap.app/Fishstrap.exe"
+$FISHSTRAP_URL = "https://github.com/fishstrap/fishstrap/releases/latest/download/Fishstrap.exe"
 
 $MULTIBLOXY_URL = "https://github.com/Zgoly/MultiBloxy/releases/download/v1.1.0.0/MultiBloxy.exe"
 
