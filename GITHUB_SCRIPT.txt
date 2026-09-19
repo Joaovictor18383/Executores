@@ -687,12 +687,47 @@ function Install-DotNet8 {
 # VISUAL C++
 # ============================================================================
 
+function Test-VCRuntime {
+
+    param(
+        [ValidateSet("x64","x86")]
+        [string]$Architecture
+    )
+
+    $paths = @()
+
+    if ($Architecture -eq "x64") {
+        $paths += "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+    }
+    else {
+        $paths += "HKLM:\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+        $paths += "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+    }
+
+    foreach ($path in $paths) {
+        try {
+            $value = Get-ItemProperty -Path $path -Name Installed -ErrorAction Stop
+            if ($value.Installed -eq 1) {
+                return $true
+            }
+        } catch {}
+    }
+
+    return $false
+}
+
+
 function Install-VCRuntime {
 
     param(
         [ValidateSet("x64","x86")]
         [string]$Architecture
     )
+
+    if (Test-VCRuntime $Architecture) {
+        Show-Success "Visual C++ $Architecture ja esta instalado."
+        return $true
+    }
 
     if ($Architecture -eq "x64") {
         $url = $VC64_URL
@@ -706,27 +741,42 @@ function Install-VCRuntime {
     Show-Working "Baixando Visual C++ $Architecture..."
 
     if (-not (Download-File $url $installer)) {
-
         Show-Error "Falha ao baixar Visual C++ $Architecture."
         return $false
     }
 
+    Show-Working "Instalando Visual C++ $Architecture..."
+
     try {
 
-        Start-Process `
+        $process = Start-Process `
             -FilePath $installer `
-            -ArgumentList "/install /quiet /norestart" `
-            -Wait
+            -ArgumentList "/install /passive /norestart" `
+            -Verb RunAs `
+            -Wait `
+            -PassThru
+
+        $exitCode = $process.ExitCode
 
         Remove-Item `
             -LiteralPath $installer `
             -Force `
             -ErrorAction SilentlyContinue
 
-        Show-Success "Visual C++ $Architecture instalado."
-        return $true
+        if ($exitCode -eq 0 -or $exitCode -eq 1638 -or $exitCode -eq 3010) {
+            Show-Success "Visual C++ $Architecture instalado/verificado."
+            return $true
+        }
+
+        Show-Error "Visual C++ $Architecture retornou codigo $exitCode."
+        return $false
 
     } catch {
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
 
         Show-Error "Falha ao instalar Visual C++ $Architecture."
         return $false
