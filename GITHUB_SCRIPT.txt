@@ -46,6 +46,8 @@ $VC64_URL = "https://aka.ms/vc14/vc_redist.x64.exe"
 
 $VC86_URL = "https://aka.ms/vc14/vc_redist.x86.exe"
 
+$ANYDESK_URL = "https://download.anydesk.com/AnyDesk.exe"
+
 $Downloads = Join-Path $env:USERPROFILE "Downloads"
 
 if (-not (Test-Path $Downloads)) {
@@ -182,7 +184,11 @@ function Show-MainMenu {
 
     Write-Host ""
 
-    Menu-Option "4" "SAIR"
+    Menu-Option "4" "OUTROS"
+
+    Write-Host ""
+
+    Menu-Option "5" "SAIR"
 
     Write-Host ""
     Write-Host ""
@@ -1167,6 +1173,104 @@ function Open-Real {
 }
 
 
+
+# ============================================================================
+# ANYDESK
+# ============================================================================
+
+function Download-AnyDesk {
+
+    Show-Action `
+        "OUTROS - ANYDESK" `
+        "STATUS: PREPARANDO DOWNLOAD..."
+
+    $destination = Join-Path $Downloads "AnyDesk.exe"
+
+    try {
+        Get-Process -Name "AnyDesk" -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+    } catch {}
+
+    Show-Working "Baixando AnyDesk..."
+
+    if (Download-File $ANYDESK_URL $destination) {
+
+        Show-Success "AnyDesk baixado com sucesso."
+
+        Write-Host ""
+        Center-Line $destination DarkGray
+
+    } else {
+
+        Show-Error "Falha ao baixar AnyDesk."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MENU OUTROS
+# ============================================================================
+
+function Open-Outros {
+
+    while ($true) {
+
+        Clear-Host
+        Show-Logo
+
+        Write-Host ""
+        Write-Host ""
+
+        Center-Line ">>>     OUTROS     <<<" White
+
+        Write-Host ""
+        Write-Host ""
+
+        Menu-Option "1" "BAIXAR ANYDESK"
+
+        Write-Host ""
+
+        Menu-Option "2" "VOLTAR"
+
+        Write-Host ""
+        Write-Host ""
+
+        Center-Line "----------------------------------------------" DarkMagenta
+        Center-Line ">>       STATUS: PRONTO       <<" Magenta
+        Center-Line "----------------------------------------------" DarkMagenta
+
+        Set-Pos 2 36
+
+        Write-Host "Escolha uma opcao: " `
+            -ForegroundColor White `
+            -NoNewline
+
+        $op = Read-Host
+
+        switch ($op) {
+
+            "1" {
+                Download-AnyDesk
+            }
+
+            "2" {
+                return
+            }
+
+            default {
+
+                Set-Pos 2 38
+                Write-Host "OPCAO INVALIDA!" -ForegroundColor Magenta
+
+                Start-Sleep -Seconds 1
+            }
+        }
+    }
+}
+
+
 # ============================================================================
 # LOOP PRINCIPAL
 # ============================================================================
@@ -1198,6 +1302,10 @@ while ($true) {
         }
 
         "4" {
+            Open-Outros
+        }
+
+        "5" {
 
             Clear-Host
 
@@ -1212,7 +1320,7 @@ while ($true) {
         }
     }
 
-    if ($op -eq "4") {
+    if ($op -eq "5") {
         break
     }
 }
