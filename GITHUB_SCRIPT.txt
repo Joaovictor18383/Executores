@@ -1174,6 +1174,102 @@ function Open-Real {
 
 
 
+
+# ============================================================================
+# STATUS DOS EXECUTORES - WEAO
+# ============================================================================
+
+function Check-ExecutorStatus {
+
+    Show-Action `
+        "OUTROS - STATUS DOS EXECUTORES" `
+        "STATUS: CONSULTANDO WEAO..."
+
+    Write-Host ""
+    Center-Line "Verificando Potassium, Madium e Real..." Magenta
+    Write-Host ""
+
+    try {
+
+        $headers = @{
+            "User-Agent" = "WEAO-3PService"
+            "Accept" = "application/json"
+        }
+
+        $statuses = Invoke-RestMethod `
+            -Uri "https://weao.xyz/api/status/exploits" `
+            -Headers $headers `
+            -Method Get `
+            -TimeoutSec 15 `
+            -ErrorAction Stop
+
+        function Show-WEAOStatus {
+
+            param(
+                [string]$Name
+            )
+
+            $item = $statuses |
+                Where-Object {
+                    $_.title -and $_.title.Trim().ToLower() -eq $Name.ToLower()
+                } |
+                Select-Object -First 1
+
+            if (-not $item) {
+                $item = $statuses |
+                    Where-Object {
+                        $_.title -and $_.title.ToLower().Contains($Name.ToLower())
+                    } |
+                    Select-Object -First 1
+            }
+
+            if (-not $item) {
+                Center-Line ("{0,-12} : NAO ENCONTRADO NO WEAO" -f $Name.ToUpper()) DarkGray
+                return
+            }
+
+            if ($item.updateStatus -eq $true) {
+                $state = "ON"
+                $color = [ConsoleColor]::Green
+            }
+            else {
+                $state = "OFF / DESATUALIZADO"
+                $color = [ConsoleColor]::Red
+            }
+
+            $version = ""
+            if ($item.version) {
+                $version = "  |  VERSAO: $($item.version)"
+            }
+
+            Center-Line ("{0,-12} : {1}{2}" -f $Name.ToUpper(), $state, $version) $color
+        }
+
+        Show-WEAOStatus "Potassium"
+
+        Write-Host ""
+
+        Show-WEAOStatus "Madium"
+
+        Write-Host ""
+
+        Show-WEAOStatus "Real"
+
+        Write-Host ""
+        Center-Line "Fonte: WhatExpsAre.Online / WEAO API" DarkGray
+
+    } catch {
+
+        Show-Error "Nao foi possivel consultar o status dos executores."
+
+        Write-Host ""
+        Center-Line "Verifique sua internet ou tente novamente mais tarde." DarkGray
+    }
+
+    Pause-SkyLand
+}
+
+
 # ============================================================================
 # ANYDESK
 # ============================================================================
@@ -1228,11 +1324,15 @@ function Open-Outros {
         Write-Host ""
         Write-Host ""
 
-        Menu-Option "1" "BAIXAR ANYDESK"
+        Menu-Option "1" "VERIFICAR STATUS DOS EXECUTORES"
 
         Write-Host ""
 
-        Menu-Option "2" "VOLTAR"
+        Menu-Option "2" "BAIXAR ANYDESK"
+
+        Write-Host ""
+
+        Menu-Option "3" "VOLTAR"
 
         Write-Host ""
         Write-Host ""
@@ -1252,10 +1352,14 @@ function Open-Outros {
         switch ($op) {
 
             "1" {
-                Download-AnyDesk
+                Check-ExecutorStatus
             }
 
             "2" {
+                Download-AnyDesk
+            }
+
+            "3" {
                 return
             }
 
