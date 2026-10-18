@@ -1,508 +1,1585 @@
 @echo off
-title Madium Manager
-setlocal EnableExtensions EnableDelayedExpansion
-chcp 65001 >nul
-color 0B
-mode con: cols=120 lines=35
-
-:: ============================================================
-:: PRIVILEGIOS DE ADMINISTRADOR
-:: ============================================================
-
-net session >nul 2>&1
-
-if errorlevel 1 (
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-    exit /b
-)
-
-goto menu
-
-
-:: ============================================================
-:: MENU PRINCIPAL
-:: ============================================================
-
-:menu
+setlocal
+title SKY LAND
+mode con: cols=120 lines=40
+color 0F
 cls
-echo.
-echo.
-echo                                   __  __    _    ____  ___ _   _ __  __
-echo                                  ^|  \/  ^|  / \  ^|  _ \^|_ _^| ^| ^| ^|  \/  ^|
-echo                                  ^| ^|\/^| ^| / _ \ ^| ^| ^| ^|^| ^|^| ^| ^| ^| ^|\/^| ^|
-echo                                  ^| ^|  ^| ^|/ ___ \^| ^|_^| ^|^| ^|^| ^|_^| ^| ^|  ^| ^|
-echo                                  ^|_^|  ^|_/_/   \_\____/___^|\___/^|_^|  ^|_^|
-echo.
-echo                                                   M A N A G E R
-echo.
-echo                    ============================================================================
-echo.
-echo                                       [ 1 ]  Baixar / Atualizar Madium
-echo.
-echo                                       [ 2 ]  Instalar Dependencias
-echo.
-echo                                       [ 3 ]  Baixar Fishstrap
-echo.
-echo                                       [ 4 ]  Baixar Roblox Account Manager
-echo.
-echo                                       [ 5 ]  Baixar MultiBloxy
-echo.
-echo                                       [ 6 ]  Sair
-echo.
-echo.
-echo                    ----------------------------------------------------------------------------
-echo.
-echo                                                STATUS: PRONTO
-echo.
-echo                    ----------------------------------------------------------------------------
-echo.
 
-set "opt="
-set /p "opt=                                       Escolha uma opcao: "
+set "SELF=%~f0"
 
-if "%opt%"=="1" goto baixar_madium
-if "%opt%"=="2" goto dependencias
-if "%opt%"=="3" goto baixar_fishstrap
-if "%opt%"=="4" goto baixar_ram
-if "%opt%"=="5" goto baixar_multibloxy
-if "%opt%"=="6" exit /b 0
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "$l=Get-Content -LiteralPath $env:SELF; $m=[Array]::IndexOf($l,'#PS1#'); if($m -lt 0){Write-Host 'ERRO: BLOCO POWERSHELL NAO ENCONTRADO' -ForegroundColor Red; Read-Host 'ENTER'; exit 1}; $c=($l[($m+1)..($l.Count-1)] -join [Environment]::NewLine); Invoke-Expression $c"
 
-goto menu
+exit /b
 
+#PS1#
 
-:: ============================================================
-:: BAIXAR / ATUALIZAR MADIUM
-:: ============================================================
+$Host.UI.RawUI.WindowTitle = "SKY LAND"
 
-:baixar_madium
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                           BAIXAR / ATUALIZAR MADIUM
-echo.
-echo                    ============================================================================
-echo.
+try {
+    $Host.UI.RawUI.BackgroundColor = "Black"
+    $Host.UI.RawUI.ForegroundColor = "White"
+} catch {}
 
-:: URL atual do Madium que ja estava configurada no GITHUB_SCRIPT.txt.
-:: Troque por um link especifico do Installer-1.1.0.exe se ele for outro arquivo.
-set "inst_url=https://files.manuscdn.com/user_upload_by_module/session_file/310519663151269258/KMFVNDQmHinAehOS.exe"
-set "inst_path=%USERPROFILE%\Downloads\Installer-1.1.0.exe"
+$ConsoleWidth = 120
 
-if not exist "%USERPROFILE%\Downloads" mkdir "%USERPROFILE%\Downloads" >nul 2>&1
-if exist "%inst_path%" del /f /q "%inst_path%" >nul 2>&1
+# ============================================================================
+# URLS
+# ============================================================================
 
-echo                                       Baixando Madium...
-echo.
+$POTASSIUM_URL = "https://files.potassium.pro/OpXOyuApWKTlFzrV.zip"
 
-curl.exe -fLsS --retry 3 --connect-timeout 15 -o "%inst_path%" "%inst_url%"
+$MADIUM_URL = "https://cdn.getmadium.me/Installer-1.1.0.exe"
 
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Nao foi possivel baixar o Madium.
-    echo                                       Verifique o link ou sua internet.
-    echo.
-    if exist "%inst_path%" del /f /q "%inst_path%" >nul 2>&1
-    pause
-    goto menu
-)
+$REAL_URL = "https://github.com/Joaovictor18383/Executores/releases/download/real-v1/RealSetup.exe"
 
-if not exist "%inst_path%" (
-    echo.
-    echo                                       [!] Arquivo nao encontrado.
-    echo.
-    pause
-    goto menu
-)
+$FISHSTRAP_URL = "https://github.com/fishstrap/fishstrap/releases/latest/download/Fishstrap.exe"
 
-for %%A in ("%inst_path%") do if %%~zA LEQ 0 (
-    echo.
-    echo                                       [!] O arquivo baixado esta vazio.
-    del /f /q "%inst_path%" >nul 2>&1
-    pause
-    goto menu
-)
+$MULTIBLOXY_URL = "https://github.com/Zgoly/MultiBloxy/releases/download/v1.1.0.0/MultiBloxy.exe"
 
-echo.
-echo                                       Download concluido.
-echo                                       Arquivo salvo em:
-echo                                       %inst_path%
-echo.
-echo                                       Abrindo instalador...
-echo.
+$DOTNET6_URL = "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/6.0.36/windowsdesktop-runtime-6.0.36-win-x64.exe"
 
-start "" "%inst_path%"
+$DOTNET8_URL = "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
 
-pause
-goto menu
+$WEBVIEW2_URL = "https://go.microsoft.com/fwlink/?linkid=2124701"
+
+$VC64_URL = "https://aka.ms/vc14/vc_redist.x64.exe"
+
+$VC86_URL = "https://aka.ms/vc14/vc_redist.x86.exe"
+
+$ANYDESK_URL = "https://download.anydesk.com/AnyDesk.exe"
+
+$Downloads = Join-Path $env:USERPROFILE "Downloads"
+
+if (-not (Test-Path $Downloads)) {
+    New-Item -ItemType Directory -Path $Downloads -Force | Out-Null
+}
 
 
-:: ============================================================
-:: DEPENDENCIAS
-:: ============================================================
+# ============================================================================
+# INTERFACE
+# ============================================================================
 
-:dependencias
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                           VERIFICANDO DEPENDENCIAS
-echo.
-echo                    ============================================================================
-echo.
+function Set-Pos {
 
-set "dotnet8_installed=0"
-where dotnet.exe >nul 2>&1
-if not errorlevel 1 (
-    for /f "delims=" %%R in ('dotnet --list-runtimes 2^>nul ^| findstr /I /C:"Microsoft.WindowsDesktop.App 8."') do set "dotnet8_installed=1"
-)
-
-set "vcredist64_installed=0"
-reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" /v "Installed" 2>nul | findstr /R /C:"REG_DWORD[ ]*0x1$" >nul
-if not errorlevel 1 set "vcredist64_installed=1"
-
-set "vcredist86_installed=0"
-reg query "HKLM\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" /v "Installed" 2>nul | findstr /R /C:"REG_DWORD[ ]*0x1$" >nul
-if not errorlevel 1 set "vcredist86_installed=1"
-
-set "webview2_installed=0"
-if exist "%ProgramFiles(x86)%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
-if exist "%ProgramFiles%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
-if exist "%LOCALAPPDATA%\Microsoft\EdgeWebView\Application" set "webview2_installed=1"
-
-echo                                       [1/4] .NET Desktop Runtime 8
-
-if "%dotnet8_installed%"=="1" (
-    echo                                              JA INSTALADO
-) else (
-    echo                                              BAIXANDO...
-    if exist "%temp%\dotnet8.exe" del /f /q "%temp%\dotnet8.exe" >nul 2>&1
-    curl.exe -fLsS --retry 2 --connect-timeout 15 -o "%temp%\dotnet8.exe" "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/8.0.27/windowsdesktop-runtime-8.0.27-win-x64.exe"
-    if errorlevel 1 (
-        echo                                              ERRO NO DOWNLOAD DO .NET 8
-        if exist "%temp%\dotnet8.exe" del /f /q "%temp%\dotnet8.exe" >nul 2>&1
-        pause
-        goto menu
+    param(
+        [int]$X,
+        [int]$Y
     )
-    if not exist "%temp%\dotnet8.exe" (
-        echo                                              INSTALADOR NAO ENCONTRADO
-        pause
-        goto menu
+
+    try {
+        $pos = New-Object System.Management.Automation.Host.Coordinates($X,$Y)
+        $Host.UI.RawUI.CursorPosition = $pos
+    } catch {}
+}
+
+
+function Center-Line {
+
+    param(
+        [string]$Text = "",
+        [ConsoleColor]$Color = "White"
     )
-    start /wait "" "%temp%\dotnet8.exe" /install /quiet /norestart
-    del /f /q "%temp%\dotnet8.exe" >nul 2>&1
-)
 
-echo.
-echo                                       [2/4] Visual C++ x64
-
-if "%vcredist64_installed%"=="1" (
-    echo                                              JA INSTALADO
-) else (
-    echo                                              BAIXANDO...
-    if exist "%temp%\vc64.exe" del /f /q "%temp%\vc64.exe" >nul 2>&1
-    curl.exe -fLsS --retry 2 --connect-timeout 15 -o "%temp%\vc64.exe" "https://aka.ms/vc14/vc_redist.x64.exe"
-    if errorlevel 1 (
-        echo                                              ERRO NO DOWNLOAD DO VC++ x64
-        if exist "%temp%\vc64.exe" del /f /q "%temp%\vc64.exe" >nul 2>&1
-        pause
-        goto menu
+    $pad = [Math]::Max(
+        0,
+        [Math]::Floor(($ConsoleWidth - $Text.Length) / 2)
     )
-    if not exist "%temp%\vc64.exe" (
-        echo                                              INSTALADOR NAO ENCONTRADO
-        pause
-        goto menu
+
+    Write-Host (" " * $pad) -NoNewline
+    Write-Host $Text -ForegroundColor $Color
+}
+
+
+function Title-Line {
+
+    param(
+        [string]$Sky,
+        [string]$Land
     )
-    start /wait "" "%temp%\vc64.exe" /install /quiet /norestart
-    del /f /q "%temp%\vc64.exe" >nul 2>&1
-)
 
-echo.
-echo                                       [3/4] Visual C++ x86
+    $total = $Sky.Length + $Land.Length
 
-if "%vcredist86_installed%"=="1" (
-    echo                                              JA INSTALADO
-) else (
-    echo                                              BAIXANDO...
-    if exist "%temp%\vc86.exe" del /f /q "%temp%\vc86.exe" >nul 2>&1
-    curl.exe -fLsS --retry 2 --connect-timeout 15 -o "%temp%\vc86.exe" "https://aka.ms/vc14/vc_redist.x86.exe"
-    if errorlevel 1 (
-        echo                                              ERRO NO DOWNLOAD DO VC++ x86
-        if exist "%temp%\vc86.exe" del /f /q "%temp%\vc86.exe" >nul 2>&1
-        pause
-        goto menu
+    $pad = [Math]::Max(
+        0,
+        [Math]::Floor(($ConsoleWidth - $total) / 2)
     )
-    if not exist "%temp%\vc86.exe" (
-        echo                                              INSTALADOR NAO ENCONTRADO
-        pause
-        goto menu
+
+    Write-Host (" " * $pad) -NoNewline
+    Write-Host $Sky -NoNewline -ForegroundColor White
+    Write-Host $Land -ForegroundColor Magenta
+}
+
+
+function Show-Logo {
+
+    Write-Host ""
+    Write-Host ""
+
+    $sky = @(
+        "  _____ _  __ __   __     "
+        " / ____| |/ / \ \ / /     "
+        "| (___ | ' /   \ V /      "
+        " \___ \|  <     | |       "
+        " ____) | . \    | |       "
+        "|_____/|_|\_\   |_|       "
     )
-    start /wait "" "%temp%\vc86.exe" /install /quiet /norestart
-    del /f /q "%temp%\vc86.exe" >nul 2>&1
-)
 
-echo.
-echo                                       [4/4] WebView2
-
-if "%webview2_installed%"=="1" (
-    echo                                              JA INSTALADO
-) else (
-    echo                                              BAIXANDO...
-    if exist "%temp%\wv2.exe" del /f /q "%temp%\wv2.exe" >nul 2>&1
-    curl.exe -fLsS --retry 2 --connect-timeout 15 -o "%temp%\wv2.exe" "https://go.microsoft.com/fwlink/?linkid=2124701"
-    if errorlevel 1 (
-        echo                                              ERRO NO DOWNLOAD DO WEBVIEW2
-        if exist "%temp%\wv2.exe" del /f /q "%temp%\wv2.exe" >nul 2>&1
-        pause
-        goto menu
+    $land = @(
+        " _          _      _   _  _____  "
+        "| |        / \    | \ | ||  __ \ "
+        "| |       / _ \   |  \| || |  | |"
+        "| |      / ___ \  | . ` || |  | |"
+        "| |____ / /   \ \ | |\  || |__| |"
+        "|______/_/     \_\|_| \_||_____/ "
     )
-    if not exist "%temp%\wv2.exe" (
-        echo                                              INSTALADOR NAO ENCONTRADO
-        pause
-        goto menu
+
+    for($i = 0; $i -lt $sky.Count; $i++) {
+        Title-Line $sky[$i] $land[$i]
+    }
+
+    Write-Host ""
+
+    Center-Line `
+        "----------------  SISTEMA DE CONTROLE E OPERACOES  ----------------" `
+        Magenta
+}
+
+
+function Menu-Option {
+
+    param(
+        [string]$Number,
+        [string]$Name
     )
-    start /wait "" "%temp%\wv2.exe" /silent /install
-    del /f /q "%temp%\wv2.exe" >nul 2>&1
-)
 
-echo.
-echo                                       Operacao concluida.
-echo.
-pause
-goto menu
+    $text = "[ $Number ]    {0,-32}" -f $Name
+
+    Center-Line $text White
+}
 
 
-:: ============================================================
-:: FISHSTRAP
-:: ============================================================
+function Show-MainMenu {
 
-:baixar_fishstrap
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                              BAIXANDO FISHSTRAP
-echo.
-echo                    ============================================================================
-echo.
+    Clear-Host
+    Show-Logo
 
-set "fishstrap_dir=%USERPROFILE%\Downloads\Fishstrap"
-set "fishstrap_exe=%fishstrap_dir%\Fishstrap.exe"
+    Write-Host ""
+    Write-Host ""
+    Write-Host ""
 
-if not exist "%fishstrap_dir%" mkdir "%fishstrap_dir%" >nul 2>&1
+    Center-Line ">>>     MENU PRINCIPAL     <<<" White
 
-echo                                       [1/2] Verificando .NET Desktop Runtime 6...
-echo.
+    Write-Host ""
+    Write-Host ""
 
-set "dotnet6_installed=0"
-where dotnet.exe >nul 2>&1
-if not errorlevel 1 (
-    for /f "delims=" %%R in ('dotnet --list-runtimes 2^>nul ^| findstr /I /C:"Microsoft.WindowsDesktop.App 6."') do set "dotnet6_installed=1"
-)
+    Menu-Option "1" "POTASSIUM"
 
-if "%dotnet6_installed%"=="1" (
-    echo                                       .NET 6 ja instalado.
-) else (
-    if exist "%temp%\dotnet6.exe" del /f /q "%temp%\dotnet6.exe" >nul 2>&1
-    curl.exe -fLsS --retry 2 --connect-timeout 15 -o "%temp%\dotnet6.exe" "https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/6.0.36/windowsdesktop-runtime-6.0.36-win-x64.exe"
-    if errorlevel 1 (
-        echo.
-        echo                                       [!] Erro ao baixar .NET 6.
-        if exist "%temp%\dotnet6.exe" del /f /q "%temp%\dotnet6.exe" >nul 2>&1
-        pause
-        goto menu
+    Write-Host ""
+
+    Menu-Option "2" "MADIUM"
+
+    Write-Host ""
+
+    Menu-Option "3" "REAL"
+
+    Write-Host ""
+
+    Menu-Option "4" "OUTROS"
+
+    Write-Host ""
+
+    Menu-Option "5" "SAIR"
+
+    Write-Host ""
+    Write-Host ""
+
+    Center-Line "----------------------------------------------" DarkMagenta
+    Center-Line ">>       STATUS: PRONTO       <<" Magenta
+    Center-Line "----------------------------------------------" DarkMagenta
+}
+
+
+function Show-ExecutorMenu {
+
+    param(
+        [string]$Name,
+        [string]$Option1,
+        [bool]$ShowDependencies = $true,
+        [string]$ExtraOption = ""
     )
-    if not exist "%temp%\dotnet6.exe" (
-        echo.
-        echo                                       [!] Instalador do .NET 6 nao encontrado.
-        pause
-        goto menu
+
+    Clear-Host
+    Show-Logo
+
+    Write-Host ""
+    Write-Host ""
+
+    Center-Line ">>>     $Name     <<<" White
+
+    Write-Host ""
+    Write-Host ""
+
+    $index = 1
+
+    Menu-Option "$index" $Option1
+    Write-Host ""
+    $index++
+
+    if ($ExtraOption) {
+        Menu-Option "$index" $ExtraOption
+        Write-Host ""
+        $index++
+    }
+
+    if ($ShowDependencies) {
+        Menu-Option "$index" "INSTALAR DEPENDENCIAS"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "BAIXAR FISHSTRAP"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "ROBLOX ACCOUNT MANAGER"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "BAIXAR MULTIBLOXY"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "VOLTAR"
+    }
+    else {
+        Menu-Option "$index" "BAIXAR FISHSTRAP"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "ROBLOX ACCOUNT MANAGER"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "BAIXAR MULTIBLOXY"
+        Write-Host ""
+        $index++
+
+        Menu-Option "$index" "VOLTAR"
+    }
+
+    Write-Host ""
+    Write-Host ""
+
+    Center-Line "----------------------------------------------" DarkMagenta
+    Center-Line ">>       STATUS: PRONTO       <<" Magenta
+    Center-Line "----------------------------------------------" DarkMagenta
+}
+
+
+function Show-Action {
+
+    param(
+        [string]$Title,
+        [string]$Status = ""
     )
-    start /wait "" "%temp%\dotnet6.exe" /install /quiet /norestart
-    del /f /q "%temp%\dotnet6.exe" >nul 2>&1
-)
 
-echo.
-echo                                       [2/2] Baixando Fishstrap...
-echo.
+    Clear-Host
+    Show-Logo
 
-if exist "%fishstrap_exe%" del /f /q "%fishstrap_exe%" >nul 2>&1
+    Write-Host ""
+    Write-Host ""
 
-curl.exe -fLsS --retry 3 --connect-timeout 15 -o "%fishstrap_exe%" "https://github.com/fishstrap/fishstrap/releases/latest/download/Fishstrap.exe"
+    Center-Line ">>>     $Title     <<<" White
 
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Erro ao baixar Fishstrap.
-    if exist "%fishstrap_exe%" del /f /q "%fishstrap_exe%" >nul 2>&1
-    pause
-    goto menu
-)
+    Write-Host ""
+    Write-Host ""
 
-if not exist "%fishstrap_exe%" (
-    echo.
-    echo                                       [!] Fishstrap nao encontrado.
-    pause
-    goto menu
-)
+    if ($Status) {
+        Center-Line $Status Magenta
+    }
 
-for %%A in ("%fishstrap_exe%") do if %%~zA LEQ 0 (
-    echo                                       [!] O arquivo baixado esta vazio.
-    del /f /q "%fishstrap_exe%" >nul 2>&1
-    pause
-    goto menu
-)
-
-echo.
-echo                                       Download concluido.
-echo                                       Pasta:
-echo                                       %fishstrap_dir%
-echo.
-
-start "" "%fishstrap_dir%"
-
-pause
-goto menu
+    Write-Host ""
+}
 
 
-:: ============================================================
-:: ROBLOX ACCOUNT MANAGER
-:: ============================================================
+function Pause-SkyLand {
 
-:baixar_ram
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                      BAIXANDO ROBLOX ACCOUNT MANAGER
-echo.
-echo                    ============================================================================
-echo.
-
-set "ram_zip=%temp%\RobloxAccountManager.zip"
-set "ram_dir=%USERPROFILE%\Downloads\Roblox Account Manager"
-
-if exist "%ram_zip%" del "%ram_zip%" /f /q >nul 2>&1
-
-echo                                       Procurando versao mais recente...
-echo.
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
-"$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; ^
-$r=Invoke-RestMethod 'https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest'; ^
-$a=$r.assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1; ^
-if(-not $a){throw 'Nenhum ZIP encontrado na release mais recente'}; ^
-Invoke-WebRequest -UseBasicParsing -Uri $a.browser_download_url -OutFile (Join-Path $env:TEMP 'RobloxAccountManager.zip')"
-
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Erro ao baixar Roblox Account Manager.
-    if exist "%ram_zip%" del "%ram_zip%" /f /q >nul 2>&1
-    pause
-    goto menu
-)
-
-if not exist "%ram_zip%" (
-    echo.
-    echo                                       [!] ZIP do Roblox Account Manager nao encontrado.
-    pause
-    goto menu
-)
-
-for %%A in ("%ram_zip%") do if %%~zA LEQ 0 (
-    echo                                       [!] O ZIP baixado esta vazio.
-    del "%ram_zip%" /f /q >nul 2>&1
-    pause
-    goto menu
-)
-
-echo.
-echo                                       Extraindo arquivos...
-echo.
-
-if not exist "%ram_dir%" mkdir "%ram_dir%" >nul 2>&1
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
-"$ErrorActionPreference='Stop'; Expand-Archive -LiteralPath (Join-Path $env:TEMP 'RobloxAccountManager.zip') -DestinationPath (Join-Path $env:USERPROFILE 'Downloads\Roblox Account Manager') -Force"
-
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Erro ao extrair os arquivos.
-    del "%ram_zip%" /f /q >nul 2>&1
-    pause
-    goto menu
-)
-
-del "%ram_zip%" /f /q >nul 2>&1
-
-echo.
-echo                                       Download concluido.
-echo                                       A pasta existente foi preservada.
-echo                                       Pasta:
-echo                                       %ram_dir%
-echo.
-
-start "" "%ram_dir%"
-
-pause
-goto menu
+    Write-Host ""
+    Center-Line "Pressione ENTER para voltar" DarkGray
+    $null = Read-Host
+}
 
 
-:: ============================================================
-:: MULTIBLOXY
-:: ============================================================
+function Show-Success {
 
-:baixar_multibloxy
-cls
-echo.
-echo                    ============================================================================
-echo.
-echo                                              BAIXANDO MULTIBLOXY
-echo.
-echo                    ============================================================================
-echo.
+    param(
+        [string]$Message
+    )
 
-set "multibloxy_url=https://github.com/Zgoly/MultiBloxy/releases/latest/download/MultiBloxy.exe"
-set "multibloxy_dir=%USERPROFILE%\Downloads\MultiBloxy"
-set "multibloxy_exe=%multibloxy_dir%\MultiBloxy.exe"
+    Write-Host ""
+    Center-Line "[ OK ] $Message" Green
+}
 
-if not exist "%multibloxy_dir%" mkdir "%multibloxy_dir%" >nul 2>&1
 
-if exist "%multibloxy_exe%" del "%multibloxy_exe%" /f /q >nul 2>&1
+function Show-Error {
 
-echo                                       Baixando MultiBloxy...
-echo.
+    param(
+        [string]$Message
+    )
 
-curl.exe -fLsS --retry 3 --connect-timeout 15 -o "%multibloxy_exe%" "%multibloxy_url%"
+    Write-Host ""
+    Center-Line "[ ERRO ] $Message" Red
+}
 
-if errorlevel 1 (
-    echo.
-    echo                                       [!] Erro ao baixar MultiBloxy.
-    if exist "%multibloxy_exe%" del "%multibloxy_exe%" /f /q >nul 2>&1
-    pause
-    goto menu
-)
 
-if not exist "%multibloxy_exe%" (
-    echo.
-    echo                                       [!] MultiBloxy nao encontrado.
-    pause
-    goto menu
-)
+function Show-Working {
 
-for %%A in ("%multibloxy_exe%") do if %%~zA LEQ 0 (
-    echo                                       [!] O arquivo baixado esta vazio.
-    del "%multibloxy_exe%" /f /q >nul 2>&1
-    pause
-    goto menu
-)
+    param(
+        [string]$Message
+    )
 
-echo.
-echo                                       Download concluido.
-echo                                       Pasta:
-echo                                       %multibloxy_dir%
-echo.
+    Write-Host ""
+    Center-Line "[ .. ] $Message" Magenta
+}
 
-start "" "%multibloxy_dir%"
 
-pause
-goto menu
+# ============================================================================
+# DOWNLOAD
+# ============================================================================
+
+function Download-File {
+
+    param(
+        [string]$Url,
+        [string]$Destination
+    )
+
+    try {
+
+        if (Test-Path $Destination) {
+            Remove-Item -LiteralPath $Destination -Force -ErrorAction SilentlyContinue
+        }
+
+        & curl.exe `
+            -f `
+            -L `
+            --retry 3 `
+            --retry-delay 2 `
+            -o $Destination `
+            $Url
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Falha no download."
+        }
+
+        if (-not (Test-Path $Destination)) {
+            throw "Arquivo nao foi criado."
+        }
+
+        $file = Get-Item -LiteralPath $Destination -ErrorAction Stop
+
+        if ($file.Length -le 0) {
+            throw "Arquivo vazio."
+        }
+
+        return $true
+
+    } catch {
+
+        Remove-Item `
+            -LiteralPath $Destination `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        return $false
+    }
+}
+
+
+# ============================================================================
+# POTASSIUM
+# ============================================================================
+
+function Download-Potassium {
+
+    Show-Action `
+        "POTASSIUM - DOWNLOAD" `
+        "STATUS: PREPARANDO DOWNLOAD..."
+
+    $destination = Join-Path $Downloads "Potassium.zip"
+
+    Show-Working "Baixando Potassium.zip..."
+
+    if (Download-File $POTASSIUM_URL $destination) {
+
+        Show-Success "Potassium baixado com sucesso."
+
+        Write-Host ""
+        Center-Line $destination DarkGray
+
+    } else {
+
+        Show-Error "Falha ao baixar Potassium."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# REAL
+# ============================================================================
+
+function Download-Real {
+
+    Show-Action `
+        "REAL - DOWNLOAD" `
+        "STATUS: PREPARANDO DOWNLOAD..."
+
+    $destination = Join-Path $Downloads "RealSetup.exe"
+
+    try {
+        Get-Process -Name "RealSetup" -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+    } catch {}
+
+    Show-Working "Baixando Real pelo GitHub..."
+
+    if (Download-File $REAL_URL $destination) {
+
+        Show-Success "Real baixado com sucesso."
+
+        Write-Host ""
+        Center-Line $destination DarkGray
+
+    } else {
+
+        Show-Error "Falha ao baixar Real."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MADIUM
+# ============================================================================
+
+function Download-Madium {
+
+    Show-Action `
+        "MADIUM - DOWNLOAD" `
+        "STATUS: PREPARANDO INSTALADOR..."
+
+    $destination = Join-Path $env:TEMP "Madium_Installer.exe"
+
+    Show-Working "Baixando Madium..."
+
+    if (-not (Download-File $MADIUM_URL $destination)) {
+
+        Show-Error "Falha ao baixar Madium."
+
+        Pause-SkyLand
+
+        return
+    }
+
+    Show-Success "Download concluido."
+
+    Show-Working "Executando Madium..."
+
+    try {
+
+        Start-Process `
+            -FilePath $destination `
+            -Wait
+
+        Show-Success "Madium finalizado."
+
+    } catch {
+
+        Show-Error "Nao foi possivel executar o Madium."
+    }
+
+    Remove-Item `
+        -LiteralPath $destination `
+        -Force `
+        -ErrorAction SilentlyContinue
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MADIUM - ARRUMAR PROBLEMA
+# ============================================================================
+
+function Repair-Madium {
+
+    Show-Action `
+        "MADIUM - ARRUMAR PROBLEMA" `
+        "STATUS: REMOVENDO INSTALACAO ANTIGA..."
+
+    Write-Host ""
+    Center-Line "Fechando processos do Madium..." DarkGray
+
+    $processNames = @(
+        "Madium"
+        "Madium-launcher"
+        "MadiumLauncher"
+        "MadiumInstaller"
+        "Loader"
+    )
+
+    foreach ($name in $processNames) {
+
+        try {
+
+            Get-Process `
+                -Name $name `
+                -ErrorAction SilentlyContinue |
+                Stop-Process `
+                    -Force `
+                    -ErrorAction SilentlyContinue
+
+        } catch {}
+    }
+
+    Start-Sleep -Milliseconds 600
+
+    Write-Host ""
+    Center-Line "Apagando arquivos antigos do Madium..." DarkGray
+
+    $folders = @(
+        (Join-Path $env:APPDATA "Madium")
+        (Join-Path $env:LOCALAPPDATA "com.madium.app")
+        (Join-Path $env:LOCALAPPDATA "com.madium.executor")
+    )
+
+    foreach ($folder in $folders) {
+
+        if (Test-Path -LiteralPath $folder) {
+
+            Remove-Item `
+                -LiteralPath $folder `
+                -Recurse `
+                -Force `
+                -ErrorAction SilentlyContinue
+        }
+    }
+
+    $shortcutRoots = @(
+        [Environment]::GetFolderPath("Desktop")
+        [Environment]::GetFolderPath("CommonDesktopDirectory")
+        (Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs")
+        (Join-Path $env:ProgramData "Microsoft\Windows\Start Menu\Programs")
+    )
+
+    foreach ($root in $shortcutRoots) {
+
+        if (-not (Test-Path -LiteralPath $root)) {
+            continue
+        }
+
+        Get-ChildItem `
+            -LiteralPath $root `
+            -Filter "*Madium*.lnk" `
+            -Recurse `
+            -ErrorAction SilentlyContinue |
+            Remove-Item `
+                -Force `
+                -ErrorAction SilentlyContinue
+    }
+
+    Show-Success "Instalacao antiga removida."
+
+    Write-Host ""
+    Show-Working "Baixando o instalador do Madium..."
+
+    $desktop = [Environment]::GetFolderPath("Desktop")
+
+    if ([string]::IsNullOrWhiteSpace($desktop)) {
+        $desktop = Join-Path $env:USERPROFILE "Desktop"
+    }
+
+    $installer = Join-Path $desktop "Installer-1.1.0.exe"
+
+    if (-not (Download-File $MADIUM_URL $installer)) {
+
+        Show-Error "Falha ao baixar o instalador do Madium."
+
+        Pause-SkyLand
+
+        return
+    }
+
+    Show-Success "Instalador salvo na Area de Trabalho."
+
+    Write-Host ""
+    Center-Line $installer DarkGray
+
+    Write-Host ""
+    Show-Working "Verificando dependencias (Visual C++)..."
+
+    Install-VCRuntime "x64" | Out-Null
+
+    Install-VCRuntime "x86" | Out-Null
+
+    Write-Host ""
+    Show-Working "Executando o instalador..."
+
+    try {
+
+        Start-Process -FilePath $installer
+
+        Show-Success "Instalador iniciado. Siga as instrucoes na tela."
+
+    } catch {
+
+        Show-Error "Nao foi possivel executar o instalador."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# WEBVIEW2
+# ============================================================================
+
+function Test-WebView2 {
+
+    if (
+        (Test-Path "${env:ProgramFiles(x86)}\Microsoft\EdgeWebView\Application") -or
+        (Test-Path "$env:ProgramFiles\Microsoft\EdgeWebView\Application")
+    ) {
+        return $true
+    }
+
+    return $false
+}
+
+
+function Install-WebView2 {
+
+    Show-Working "Verificando Microsoft Edge WebView2..."
+
+    if (Test-WebView2) {
+
+        Show-Success "WebView2 ja esta instalado."
+
+        return $true
+    }
+
+    $installer = Join-Path $env:TEMP "MicrosoftEdgeWebView2.exe"
+
+    Show-Working "Baixando WebView2..."
+
+    if (-not (Download-File $WEBVIEW2_URL $installer)) {
+
+        Show-Error "Falha ao baixar WebView2."
+
+        return $false
+    }
+
+    Show-Working "Instalando WebView2..."
+
+    try {
+
+        Start-Process `
+            -FilePath $installer `
+            -ArgumentList "/silent /install" `
+            -Wait
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Success "WebView2 instalado."
+
+        return $true
+
+    } catch {
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Error "Falha ao instalar WebView2."
+
+        return $false
+    }
+}
+
+
+function Install-PotassiumDependencies {
+
+    Show-Action `
+        "POTASSIUM - DEPENDENCIAS" `
+        "STATUS: VERIFICANDO DEPENDENCIAS..."
+
+    Install-WebView2 | Out-Null
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# .NET
+# ============================================================================
+
+function Test-DotNetDesktop {
+
+    param(
+        [string]$Major
+    )
+
+    try {
+
+        $dotnet = Get-Command dotnet -ErrorAction Stop
+        $runtimes = & $dotnet.Source --list-runtimes 2>$null
+
+        foreach ($runtime in $runtimes) {
+
+            if ($runtime -match "Microsoft\.WindowsDesktop\.App $Major\.") {
+                return $true
+            }
+        }
+
+    } catch {}
+
+    return $false
+}
+
+
+function Install-DotNet6 {
+
+    if (Test-DotNetDesktop "6") {
+
+        Show-Success ".NET Desktop Runtime 6 ja esta instalado."
+        return $true
+    }
+
+    $installer = Join-Path $env:TEMP "dotnet6_desktop.exe"
+
+    Show-Working "Baixando .NET Desktop Runtime 6..."
+
+    if (-not (Download-File $DOTNET6_URL $installer)) {
+
+        Show-Error "Falha ao baixar .NET 6."
+        return $false
+    }
+
+    Show-Working "Instalando .NET Desktop Runtime 6..."
+
+    try {
+
+        Start-Process `
+            -FilePath $installer `
+            -ArgumentList "/install /quiet /norestart" `
+            -Wait
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Success ".NET 6 instalado."
+        return $true
+
+    } catch {
+
+        Show-Error "Falha ao instalar .NET 6."
+        return $false
+    }
+}
+
+
+function Install-DotNet8 {
+
+    if (Test-DotNetDesktop "8") {
+
+        Show-Success ".NET Desktop Runtime 8 ja esta instalado."
+        return $true
+    }
+
+    $installer = Join-Path $env:TEMP "dotnet8_desktop.exe"
+
+    Show-Working "Baixando .NET Desktop Runtime 8..."
+
+    if (-not (Download-File $DOTNET8_URL $installer)) {
+
+        Show-Error "Falha ao baixar .NET 8."
+        return $false
+    }
+
+    Show-Working "Instalando .NET Desktop Runtime 8..."
+
+    try {
+
+        Start-Process `
+            -FilePath $installer `
+            -ArgumentList "/install /quiet /norestart" `
+            -Wait
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Success ".NET 8 instalado."
+        return $true
+
+    } catch {
+
+        Show-Error "Falha ao instalar .NET 8."
+        return $false
+    }
+}
+
+
+# ============================================================================
+# VISUAL C++
+# ============================================================================
+
+function Test-VCRuntime {
+
+    param(
+        [ValidateSet("x64","x86")]
+        [string]$Architecture
+    )
+
+    $paths = @()
+
+    if ($Architecture -eq "x64") {
+        $paths += "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64"
+    }
+    else {
+        $paths += "HKLM:\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+        $paths += "HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86"
+    }
+
+    foreach ($path in $paths) {
+        try {
+            $value = Get-ItemProperty -Path $path -Name Installed -ErrorAction Stop
+            if ($value.Installed -eq 1) {
+                return $true
+            }
+        } catch {}
+    }
+
+    return $false
+}
+
+
+function Install-VCRuntime {
+
+    param(
+        [ValidateSet("x64","x86")]
+        [string]$Architecture
+    )
+
+    if (Test-VCRuntime $Architecture) {
+        Show-Success "Visual C++ $Architecture ja esta instalado."
+        return $true
+    }
+
+    if ($Architecture -eq "x64") {
+        $url = $VC64_URL
+        $installer = Join-Path $env:TEMP "vc_redist.x64.exe"
+    }
+    else {
+        $url = $VC86_URL
+        $installer = Join-Path $env:TEMP "vc_redist.x86.exe"
+    }
+
+    Show-Working "Baixando Visual C++ $Architecture..."
+
+    if (-not (Download-File $url $installer)) {
+        Show-Error "Falha ao baixar Visual C++ $Architecture."
+        return $false
+    }
+
+    Show-Working "Instalando Visual C++ $Architecture..."
+
+    try {
+
+        $process = Start-Process `
+            -FilePath $installer `
+            -ArgumentList "/install /passive /norestart" `
+            -Verb RunAs `
+            -Wait `
+            -PassThru
+
+        $exitCode = $process.ExitCode
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        if ($exitCode -eq 0 -or $exitCode -eq 1638 -or $exitCode -eq 3010) {
+            Show-Success "Visual C++ $Architecture instalado/verificado."
+            return $true
+        }
+
+        Show-Error "Visual C++ $Architecture retornou codigo $exitCode."
+        return $false
+
+    } catch {
+
+        Remove-Item `
+            -LiteralPath $installer `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Error "Falha ao instalar Visual C++ $Architecture."
+        return $false
+    }
+}
+
+
+function Install-MadiumDependencies {
+
+    Show-Action `
+        "MADIUM - DEPENDENCIAS" `
+        "STATUS: VERIFICANDO DEPENDENCIAS..."
+
+    Write-Host ""
+
+    Center-Line "[ 1 / 4 ] .NET DESKTOP RUNTIME 8" White
+    Install-DotNet8 | Out-Null
+
+    Write-Host ""
+
+    Center-Line "[ 2 / 4 ] VISUAL C++ x64" White
+    Install-VCRuntime "x64" | Out-Null
+
+    Write-Host ""
+
+    Center-Line "[ 3 / 4 ] VISUAL C++ x86" White
+    Install-VCRuntime "x86" | Out-Null
+
+    Write-Host ""
+
+    Center-Line "[ 4 / 4 ] WEBVIEW2" White
+    Install-WebView2 | Out-Null
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# FISHSTRAP
+# ============================================================================
+
+function Download-Fishstrap {
+
+    param(
+        [string]$ExecutorName
+    )
+
+    Show-Action `
+        "$ExecutorName - FISHSTRAP" `
+        "STATUS: PREPARANDO FISHSTRAP..."
+
+    if (-not (Install-DotNet6)) {
+        Pause-SkyLand
+        return
+    }
+
+    $destination = Join-Path $Downloads "Fishstrap.exe"
+
+    try {
+        Get-Process -Name "Fishstrap" -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+    } catch {}
+
+    Show-Working "Procurando versao mais recente do Fishstrap..."
+
+    try {
+
+        $release = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/fishstrap/fishstrap/releases/latest" `
+            -Headers @{
+                "User-Agent" = "SKY-LAND"
+                "Accept" = "application/vnd.github+json"
+            } `
+            -ErrorAction Stop
+
+        $asset = $release.assets |
+            Where-Object {
+                $_.name -ieq "Fishstrap.exe"
+            } |
+            Select-Object -First 1
+
+        if (-not $asset) {
+            throw "Fishstrap.exe nao encontrado na release mais recente."
+        }
+
+        $downloadUrl = $asset.browser_download_url
+
+        if ([string]::IsNullOrWhiteSpace($downloadUrl)) {
+            throw "Link de download do Fishstrap nao encontrado."
+        }
+
+        Show-Working "Baixando Fishstrap $($release.tag_name)..."
+
+        if (-not (Download-File $downloadUrl $destination)) {
+            throw "Falha no download do Fishstrap."
+        }
+
+        Show-Success "Fishstrap $($release.tag_name) baixado."
+
+        Show-Working "Executando Fishstrap..."
+
+        Start-Process -FilePath $destination
+
+        Show-Success "Fishstrap iniciado."
+
+    } catch {
+
+        Show-Error "Falha ao baixar Fishstrap."
+
+        if ($_.Exception.Message) {
+            Write-Host ""
+            Center-Line $_.Exception.Message DarkGray
+        }
+
+        Pause-SkyLand
+        return
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# ROBLOX ACCOUNT MANAGER
+# ============================================================================
+
+function Download-RobloxAccountManager {
+
+    param(
+        [string]$ExecutorName
+    )
+
+    Show-Action `
+        "$ExecutorName - ROBLOX ACCOUNT MANAGER" `
+        "STATUS: PROCURANDO VERSAO MAIS RECENTE..."
+
+    $zip = Join-Path $env:TEMP "RobloxAccountManager.zip"
+    $folder = Join-Path $Downloads "Roblox Account Manager"
+
+    Remove-Item `
+        -LiteralPath $zip `
+        -Force `
+        -ErrorAction SilentlyContinue
+
+    try {
+
+        $release = Invoke-RestMethod `
+            -Uri "https://api.github.com/repos/ic3w0lf22/Roblox-Account-Manager/releases/latest" `
+            -Headers @{
+                "User-Agent" = "SKY-LAND"
+            } `
+            -ErrorAction Stop
+
+        $asset = $release.assets |
+            Where-Object {
+                $_.name -like "*.zip"
+            } |
+            Select-Object -First 1
+
+        if (-not $asset) {
+            throw "ZIP nao encontrado."
+        }
+
+        Show-Working "Baixando Roblox Account Manager..."
+
+        if (-not (Download-File $asset.browser_download_url $zip)) {
+            throw "Falha no download."
+        }
+
+        if (Test-Path $folder) {
+
+            Remove-Item `
+                -LiteralPath $folder `
+                -Recurse `
+                -Force `
+                -ErrorAction SilentlyContinue
+        }
+
+        New-Item `
+            -ItemType Directory `
+            -Path $folder `
+            -Force |
+            Out-Null
+
+        Show-Working "Extraindo arquivos..."
+
+        Expand-Archive `
+            -LiteralPath $zip `
+            -DestinationPath $folder `
+            -Force
+
+        Remove-Item `
+            -LiteralPath $zip `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        Show-Success "Roblox Account Manager baixado."
+
+    } catch {
+
+        Show-Error "Falha ao baixar Roblox Account Manager."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MULTIBLOXY
+# ============================================================================
+
+function Download-MultiBloxy {
+
+    param(
+        [string]$ExecutorName
+    )
+
+    Show-Action `
+        "$ExecutorName - MULTIBLOXY" `
+        "STATUS: PREPARANDO DOWNLOAD..."
+
+    $destination = Join-Path $Downloads "MultiBloxy.exe"
+
+    try {
+        Get-Process -Name "MultiBloxy" -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+    } catch {}
+
+    Show-Working "Baixando MultiBloxy..."
+
+    if (Download-File $MULTIBLOXY_URL $destination) {
+
+        Show-Success "MultiBloxy baixado."
+
+    } else {
+
+        Show-Error "Falha ao baixar MultiBloxy."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MENU POTASSIUM
+# ============================================================================
+
+function Open-Potassium {
+
+    while ($true) {
+
+        Show-ExecutorMenu `
+            "POTASSIUM" `
+            "BAIXAR POTASSIUM"
+
+        Set-Pos 2 36
+
+        Write-Host "Escolha uma opcao: " `
+            -ForegroundColor White `
+            -NoNewline
+
+        $op = Read-Host
+
+        switch ($op) {
+
+            "1" {
+                Download-Potassium
+            }
+
+            "2" {
+                Install-PotassiumDependencies
+            }
+
+            "3" {
+                Download-Fishstrap "POTASSIUM"
+            }
+
+            "4" {
+                Download-RobloxAccountManager "POTASSIUM"
+            }
+
+            "5" {
+                Download-MultiBloxy "POTASSIUM"
+            }
+
+            "6" {
+                return
+            }
+        }
+    }
+}
+
+
+# ============================================================================
+# MENU MADIUM
+# ============================================================================
+
+function Open-Madium {
+
+    while ($true) {
+
+        Show-ExecutorMenu `
+            "MADIUM" `
+            "BAIXAR / ATUALIZAR MADIUM" `
+            -ExtraOption "ARRUMAR PROBLEMA DO MADIUM"
+
+        Set-Pos 2 36
+
+        Write-Host "Escolha uma opcao: " `
+            -ForegroundColor White `
+            -NoNewline
+
+        $op = Read-Host
+
+        switch ($op) {
+
+            "1" {
+                Download-Madium
+            }
+
+            "2" {
+                Repair-Madium
+            }
+
+            "3" {
+                Install-MadiumDependencies
+            }
+
+            "4" {
+                Download-Fishstrap "MADIUM"
+            }
+
+            "5" {
+                Download-RobloxAccountManager "MADIUM"
+            }
+
+            "6" {
+                Download-MultiBloxy "MADIUM"
+            }
+
+            "7" {
+                return
+            }
+        }
+    }
+}
+
+
+# ============================================================================
+# MENU REAL
+# ============================================================================
+
+function Open-Real {
+
+    while ($true) {
+
+        Show-ExecutorMenu `
+            "REAL" `
+            "BAIXAR REAL" `
+            $false
+
+        Set-Pos 2 36
+
+        Write-Host "Escolha uma opcao: " `
+            -ForegroundColor White `
+            -NoNewline
+
+        $op = Read-Host
+
+        switch ($op) {
+
+            "1" {
+                Download-Real
+            }
+
+            "2" {
+                Download-Fishstrap "REAL"
+            }
+
+            "3" {
+                Download-RobloxAccountManager "REAL"
+            }
+
+            "4" {
+                Download-MultiBloxy "REAL"
+            }
+
+            "5" {
+                return
+            }
+        }
+    }
+}
+
+
+
+
+# ============================================================================
+# STATUS DOS EXECUTORES - WEAO
+# ============================================================================
+
+function Check-ExecutorStatus {
+
+    Show-Action `
+        "OUTROS - STATUS DOS EXECUTORES" `
+        "STATUS: CONSULTANDO WEAO..."
+
+    Write-Host ""
+    Center-Line "Verificando Potassium, Madium e Real..." Magenta
+    Write-Host ""
+
+    try {
+
+        $headers = @{
+            "User-Agent" = "WEAO-3PService"
+            "Accept" = "application/json"
+        }
+
+        $statuses = Invoke-RestMethod `
+            -Uri "https://weao.xyz/api/status/exploits" `
+            -Headers $headers `
+            -Method Get `
+            -TimeoutSec 15 `
+            -ErrorAction Stop
+
+        function Show-WEAOStatus {
+
+            param(
+                [string]$Name
+            )
+
+            $item = $statuses |
+                Where-Object {
+                    $_.title -and $_.title.Trim().ToLower() -eq $Name.ToLower()
+                } |
+                Select-Object -First 1
+
+            if (-not $item) {
+                $item = $statuses |
+                    Where-Object {
+                        $_.title -and $_.title.ToLower().Contains($Name.ToLower())
+                    } |
+                    Select-Object -First 1
+            }
+
+            if (-not $item) {
+                Center-Line ("{0,-12} : NAO ENCONTRADO NO WEAO" -f $Name.ToUpper()) DarkGray
+                return
+            }
+
+            if ($item.updateStatus -eq $true) {
+                $state = "ON"
+                $color = [ConsoleColor]::Green
+            }
+            else {
+                $state = "OFF / DESATUALIZADO"
+                $color = [ConsoleColor]::Red
+            }
+
+            $version = ""
+            if ($item.version) {
+                $version = "  |  VERSAO: $($item.version)"
+            }
+
+            Center-Line ("{0,-12} : {1}{2}" -f $Name.ToUpper(), $state, $version) $color
+        }
+
+        Show-WEAOStatus "Potassium"
+
+        Write-Host ""
+
+        Show-WEAOStatus "Madium"
+
+        Write-Host ""
+
+        Show-WEAOStatus "Real"
+
+        Write-Host ""
+        Center-Line "Fonte: WhatExpsAre.Online / WEAO API" DarkGray
+
+    } catch {
+
+        Show-Error "Nao foi possivel consultar o status dos executores."
+
+        Write-Host ""
+        Center-Line "Verifique sua internet ou tente novamente mais tarde." DarkGray
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# ANYDESK
+# ============================================================================
+
+function Download-AnyDesk {
+
+    Show-Action `
+        "OUTROS - ANYDESK" `
+        "STATUS: PREPARANDO DOWNLOAD..."
+
+    $destination = Join-Path $Downloads "AnyDesk.exe"
+
+    try {
+        Get-Process -Name "AnyDesk" -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+    } catch {}
+
+    Show-Working "Baixando AnyDesk..."
+
+    if (Download-File $ANYDESK_URL $destination) {
+
+        Show-Success "AnyDesk baixado com sucesso."
+
+        Write-Host ""
+        Center-Line $destination DarkGray
+
+    } else {
+
+        Show-Error "Falha ao baixar AnyDesk."
+    }
+
+    Pause-SkyLand
+}
+
+
+# ============================================================================
+# MENU OUTROS
+# ============================================================================
+
+function Open-Outros {
+
+    while ($true) {
+
+        Clear-Host
+        Show-Logo
+
+        Write-Host ""
+        Write-Host ""
+
+        Center-Line ">>>     OUTROS     <<<" White
+
+        Write-Host ""
+        Write-Host ""
+
+        Menu-Option "1" "VERIFICAR STATUS DOS EXECUTORES"
+
+        Write-Host ""
+
+        Menu-Option "2" "BAIXAR ANYDESK"
+
+        Write-Host ""
+
+        Menu-Option "3" "VOLTAR"
+
+        Write-Host ""
+        Write-Host ""
+
+        Center-Line "----------------------------------------------" DarkMagenta
+        Center-Line ">>       STATUS: PRONTO       <<" Magenta
+        Center-Line "----------------------------------------------" DarkMagenta
+
+        Set-Pos 2 36
+
+        Write-Host "Escolha uma opcao: " `
+            -ForegroundColor White `
+            -NoNewline
+
+        $op = Read-Host
+
+        switch ($op) {
+
+            "1" {
+                Check-ExecutorStatus
+            }
+
+            "2" {
+                Download-AnyDesk
+            }
+
+            "3" {
+                return
+            }
+
+            default {
+
+                Set-Pos 2 38
+                Write-Host "OPCAO INVALIDA!" -ForegroundColor Magenta
+
+                Start-Sleep -Seconds 1
+            }
+        }
+    }
+}
+
+
+# ============================================================================
+# LOOP PRINCIPAL
+# ============================================================================
+
+while ($true) {
+
+    Show-MainMenu
+
+    Set-Pos 2 36
+
+    Write-Host "Escolha uma opcao: " `
+        -ForegroundColor White `
+        -NoNewline
+
+    $op = Read-Host
+
+    switch ($op) {
+
+        "1" {
+            Open-Potassium
+        }
+
+        "2" {
+            Open-Madium
+        }
+
+        "3" {
+            Open-Real
+        }
+
+        "4" {
+            Open-Outros
+        }
+
+        "5" {
+
+            Clear-Host
+
+            Write-Host ""
+            Write-Host ""
+
+            Center-Line "ENCERRANDO SKY LAND..." Magenta
+
+            Start-Sleep -Milliseconds 700
+
+            break
+        }
+    }
+
+    if ($op -eq "5") {
+        break
+    }
+}
